@@ -1,0 +1,135 @@
+import React, { useState, useEffect } from 'react';
+
+const CHAR_DELAY_MS = 32;
+
+export default function CritiqueDisplay({ text, jokeType, onWatchFilm, onTryAgain }) {
+  const [displayed, setDisplayed]   = useState('');
+  const [complete, setComplete]     = useState(false);
+  const [filmHovered, setFilmHovered] = useState(false);
+
+  const isSteal = jokeType === 'steal';
+  const accentColor = isSteal ? '#c9963a' : '#dc2626';
+
+  useEffect(() => {
+    setDisplayed('');
+    setComplete(false);
+    let i = 0;
+    const id = setInterval(() => {
+      i += 1;
+      setDisplayed(text.slice(0, i));
+      if (i >= text.length) {
+        setComplete(true);
+        clearInterval(id);
+      }
+    }, CHAR_DELAY_MS);
+    return () => clearInterval(id);
+  }, [text]);
+
+  return (
+    <div className="fade-up">
+      {/* Label */}
+      <p
+        className="font-bold uppercase mb-4"
+        style={{
+          color: accentColor,
+          fontSize: '0.58rem',
+          letterSpacing: '0.45em',
+          opacity: 0.65,
+        }}
+      >
+        {isSteal ? '— Judge\'s Notes —' : '— Audience Review —'}
+      </p>
+
+      {/* Quote mark */}
+      <span
+        className="block font-bold leading-none mb-2"
+        style={{ color: accentColor, fontSize: '3rem', opacity: 0.25, lineHeight: 1 }}
+      >
+        "
+      </span>
+
+      {/* Typewriter text */}
+      <div
+        style={{
+          borderLeft: `3px solid ${accentColor}`,
+          paddingLeft: '1.2rem',
+          marginBottom: '2rem',
+          minHeight: '4rem',
+        }}
+      >
+        <p
+          className="font-bold"
+          style={{
+            color: '#f0ebe0',
+            fontSize: '1.05rem',
+            lineHeight: 1.62,
+            fontFamily: "'Courier Prime', 'Courier New', Courier, monospace",
+          }}
+        >
+          {displayed}
+          {!complete && (
+            <span className="tw-cursor" style={{ color: accentColor }}>
+              |
+            </span>
+          )}
+        </p>
+      </div>
+
+      {/* Actions — appear once typewriter finishes */}
+      {complete && (
+        <div className="fade-up flex flex-col gap-3">
+          {/* Watch the Film */}
+          <button
+            onClick={onWatchFilm}
+            onMouseEnter={() => setFilmHovered(true)}
+            onMouseLeave={() => setFilmHovered(false)}
+            style={{
+              width: '100%',
+              border: `2px solid ${isSteal ? '#c9963a' : '#f0ebe0'}`,
+              background: isSteal
+                ? filmHovered ? '#f5c842' : '#c9963a'
+                : filmHovered ? 'rgba(240,235,224,0.9)' : '#f0ebe0',
+              color: '#080808',
+              padding: '1rem 2rem',
+              fontSize: '0.92rem',
+              fontWeight: 700,
+              letterSpacing: '0.22em',
+              textTransform: 'uppercase',
+              cursor: 'pointer',
+              fontFamily: "'Courier Prime', 'Courier New', Courier, monospace",
+              transform: filmHovered ? 'scale(1.02)' : 'scale(1)',
+              transition: 'all 0.14s ease',
+            }}
+          >
+            Watch the Film →
+          </button>
+
+          {/* Try again */}
+          <button
+            onClick={onTryAgain}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'rgba(240,235,224,0.22)',
+              fontSize: '0.6rem',
+              letterSpacing: '0.38em',
+              textTransform: 'uppercase',
+              cursor: 'pointer',
+              fontFamily: "'Courier Prime', 'Courier New', Courier, monospace",
+              fontWeight: 700,
+              padding: '0.5rem 0',
+              textAlign: 'center',
+              display: 'block',
+              width: '100%',
+              transition: 'color 0.15s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'rgba(240,235,224,0.5)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(240,235,224,0.22)')}
+          >
+            Try Again (Brave)
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}

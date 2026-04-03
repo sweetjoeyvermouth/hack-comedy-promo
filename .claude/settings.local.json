@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p \"/Users/joey/Documents/Claude/Projects/PROJECT 5/public/assets\")",
+      "Bash(cp \"/Users/joey/Documents/Claude/Projects/PROJECT 5/assets/background.jpg\" \"/Users/joey/Documents/Claude/Projects/PROJECT 5/public/assets/background.jpg\")",
+      "Bash(mkdir -p \"/Users/joey/Documents/Claude/Projects/PROJECT 5/src/components\")",
+      "Bash(npm install:*)",
+      "Bash(npx react-scripts:*)"
+    ]
+  }
+}
