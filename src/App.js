@@ -4,7 +4,7 @@ import ListeningIndicator from './components/ListeningIndicator';
 import CritiqueDisplay from './components/CritiqueDisplay';
 import FilmEmbed from './components/FilmEmbed';
 
-// ─── Critique Arrays ───────────────────────────────────────────────────────────
+// ─── Arrays ────────────────────────────────────────────────────────────────────
 
 const TELL_RESPONSES = [
   "I've heard funnier eulogies.",
@@ -52,6 +52,21 @@ const STEAL_RESPONSES = [
   "A natural talent, or a very good thief.",
 ];
 
+const STEAL_INTROS = [
+  "You're lucky the opener left his cards behind.",
+  "Don't worry. He'll never know.",
+  "Consider it a loan. An indefinite one.",
+  "The original writer would be horrified. Go ahead.",
+  "He's not using it right now.",
+  "Possession is nine-tenths of comedy.",
+  "Borrowed material. Return date: never.",
+  "He left these here. Finders keepers.",
+  "It's not stealing if you say it with confidence.",
+  "What they don't know won't hurt them.",
+  "The statute of limitations on joke theft is five minutes. You're fine.",
+  "Think of it as a tribute. An uncredited one.",
+];
+
 const STOLEN_JOKES = [
   "Why don't scientists trust atoms? Because they make up everything.",
   "I told my wife she should embrace her mistakes. She gave me a hug.",
@@ -65,27 +80,26 @@ const STOLEN_JOKES = [
   "What do you call cheese that isn't yours? Nacho cheese.",
 ];
 
-// Replace with your actual Vimeo video ID
 const VIMEO_ID = '76979871';
+
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 
 // ─── App ───────────────────────────────────────────────────────────────────────
 
 export default function App() {
-  // phase: 'idle' | 'steal-setup' | 'listening' | 'processing' | 'critique' | 'film'
-  const [phase, setPhase]           = useState('idle');
-  const [jokeType, setJokeType]     = useState(null);   // 'tell' | 'steal'
+  const [phase, setPhase]         = useState('idle');
+  const [jokeType, setJokeType]   = useState(null);
   const [stolenJoke, setStolenJoke] = useState('');
-  const [critique, setCritique]     = useState('');
-  const [micError, setMicError]     = useState('');
+  const [stealIntro, setStealIntro] = useState('');
+  const [critique, setCritique]   = useState('');
+  const [micError, setMicError]   = useState('');
 
-  // Refs keep closure-safe handles to live resources
-  const jokeTypeRef     = useRef(null);
-  const streamRef       = useRef(null);
-  const audioCtxRef     = useRef(null);
-  const animFrameRef    = useRef(null);
-  const maxTimeoutRef   = useRef(null);
+  const jokeTypeRef   = useRef(null);
+  const streamRef     = useRef(null);
+  const audioCtxRef   = useRef(null);
+  const animFrameRef  = useRef(null);
+  const maxTimeoutRef = useRef(null);
 
-  // ─── Teardown helpers ────────────────────────────────────────
   const cleanup = useCallback(() => {
     if (animFrameRef.current)  { cancelAnimationFrame(animFrameRef.current); animFrameRef.current = null; }
     if (maxTimeoutRef.current) { clearTimeout(maxTimeoutRef.current);        maxTimeoutRef.current = null; }
@@ -93,28 +107,25 @@ export default function App() {
     if (audioCtxRef.current)   { audioCtxRef.current.close().catch(() => {}); audioCtxRef.current = null; }
   }, []);
 
-  // ─── Stop recording & derive critique ────────────────────────
   const stopRecording = useCallback(() => {
     cleanup();
     setPhase('processing');
     setTimeout(() => {
       const pool = jokeTypeRef.current === 'steal' ? STEAL_RESPONSES : TELL_RESPONSES;
-      setCritique(pool[Math.floor(Math.random() * pool.length)]);
+      setCritique(pick(pool));
       setPhase('critique');
     }, 900);
   }, [cleanup]);
 
-  // ─── Start mic & silence detection ───────────────────────────
   const startListening = useCallback(async () => {
     setMicError('');
     setPhase('listening');
-
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
       streamRef.current = stream;
 
-      const AudioCtx   = window.AudioContext || window.webkitAudioContext;
-      const audioCtx   = new AudioCtx();
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      const audioCtx = new AudioCtx();
       audioCtxRef.current = audioCtx;
 
       const source   = audioCtx.createMediaStreamSource(stream);
@@ -122,37 +133,28 @@ export default function App() {
       analyser.fftSize = 1024;
       source.connect(analyser);
 
-      const dataArray        = new Uint8Array(analyser.frequencyBinCount);
-      const SILENCE_THRESH   = 12;
-      const SILENCE_HOLD_MS  = 2500;
-      const MAX_DURATION_MS  = 30000;
-      let silenceStart       = null;
-      let hasSpoken          = false;
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+      let silenceStart = null;
+      let hasSpoken    = false;
 
-      maxTimeoutRef.current = setTimeout(stopRecording, MAX_DURATION_MS);
+      maxTimeoutRef.current = setTimeout(stopRecording, 30000);
 
       const tick = () => {
         if (!audioCtxRef.current) return;
         analyser.getByteFrequencyData(dataArray);
         const avg = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
-
-        if (avg > SILENCE_THRESH) {
-          hasSpoken    = true;
-          silenceStart = null;
+        if (avg > 12) {
+          hasSpoken = true; silenceStart = null;
         } else if (hasSpoken) {
           if (!silenceStart) silenceStart = Date.now();
-          else if (Date.now() - silenceStart >= SILENCE_HOLD_MS) {
-            stopRecording();
-            return;
-          }
+          else if (Date.now() - silenceStart >= 2500) { stopRecording(); return; }
         }
         animFrameRef.current = requestAnimationFrame(tick);
       };
-
       tick();
     } catch (err) {
       cleanup();
-      setPhase('idle');
+      setPhase(jokeTypeRef.current === 'steal' ? 'steal-setup' : 'idle');
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
         setMicError("Mic access denied. Even the mic doesn't want to hear it.");
       } else if (err.name === 'NotFoundError') {
@@ -163,7 +165,6 @@ export default function App() {
     }
   }, [cleanup, stopRecording]);
 
-  // ─── User actions ─────────────────────────────────────────────
   const handleTellJoke = () => {
     jokeTypeRef.current = 'tell';
     setJokeType('tell');
@@ -173,13 +174,10 @@ export default function App() {
   const handleStealJoke = () => {
     jokeTypeRef.current = 'steal';
     setJokeType('steal');
-    setStolenJoke(STOLEN_JOKES[Math.floor(Math.random() * STOLEN_JOKES.length)]);
+    setStolenJoke(pick(STOLEN_JOKES));
+    setStealIntro(pick(STEAL_INTROS));
     setPhase('steal-setup');
   };
-
-  const handleStartReading = () => startListening();
-
-  const handleWatchFilm = () => setPhase('film');
 
   const handleReset = () => {
     cleanup();
@@ -187,34 +185,48 @@ export default function App() {
     setPhase('idle');
     setJokeType(null);
     setStolenJoke('');
+    setStealIntro('');
     setCritique('');
     setMicError('');
   };
 
-  // Cleanup on unmount
   useEffect(() => () => cleanup(), [cleanup]);
+
+  // ─── Layout helpers ───────────────────────────────────────────
+
+  const showingSteal = phase === 'steal-setup' || (phase === 'listening' && jokeType === 'steal');
+  const showingTellListen = phase === 'listening' && jokeType === 'tell';
+
+  const Rings = () => (
+    <div className="relative flex items-center justify-center" style={{ width: 240, height: 240 }}>
+      <div className="ring-pulse"   style={{ position: 'absolute', width: 240, height: 240 }} />
+      <div className="ring-pulse-2" style={{ position: 'absolute', width: 170, height: 170 }} />
+      <div className="ring-pulse-3" style={{ position: 'absolute', width: 105, height: 105 }} />
+      <div className="rec-dot" style={{ width: 16, height: 16, borderRadius: '50%', background: '#dc2626' }} />
+    </div>
+  );
 
   // ─── Render ───────────────────────────────────────────────────
   return (
     <div className="relative min-h-screen w-full overflow-hidden font-courier bg-club-bg">
 
-      {/* ── Ambient layers ── */}
+      {/* Background */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/assets/background.jpg')" }}
       />
-      {/* Gradient: lets mic breathe on the left, darkens toward interactive panel on right */}
+      {/* Vignette — lighter in center where mic is, darker at edges where buttons are */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            'linear-gradient(to right, rgba(8,8,8,0.40) 0%, rgba(8,8,8,0.72) 42%, rgba(8,8,8,0.94) 100%)',
+            'radial-gradient(ellipse at 50% 52%, rgba(8,8,8,0.28) 0%, rgba(8,8,8,0.75) 60%, rgba(8,8,8,0.93) 100%)',
         }}
       />
       <div className="grain-overlay" />
       <div className="scanlines" />
 
-      {/* ── Content ── */}
+      {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col">
 
         {phase === 'film' ? (
@@ -222,176 +234,118 @@ export default function App() {
         ) : (
           <>
             {/* Header */}
-            <header className="flex-shrink-0 pt-7 px-6 md:px-12 pb-3">
+            <header className="flex-shrink-0 pt-7 px-8 pb-3">
               <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-club-gold text-[0.6rem] tracking-[0.48em] uppercase font-bold mb-1 opacity-80">
-                    A Film By —
-                  </p>
-                  <h1
-                    className="text-club-text font-bold uppercase leading-none tracking-tight"
-                    style={{ fontSize: 'clamp(2.8rem, 8vw, 5.5rem)', letterSpacing: '-0.025em' }}
-                  >
-                    HACK
-                  </h1>
-                  <p className="text-club-gold text-[0.6rem] tracking-[0.28em] mt-1.5 opacity-40">
-                    [ IT WASN'T YOUR MATERIAL ]
-                  </p>
-                </div>
-
-                {/* Live indicator */}
-                <div className="hidden md:flex flex-col items-end gap-1 pt-1">
-                  <span className="text-club-text text-[0.55rem] tracking-[0.45em] uppercase opacity-20">
-                    Now Showing
-                  </span>
-                  <span className="text-club-red text-sm rec-dot">●</span>
-                </div>
+                <h1
+                  className="text-club-text font-bold uppercase leading-none"
+                  style={{ fontSize: 'clamp(2.4rem, 7vw, 5rem)', letterSpacing: '-0.025em' }}
+                >
+                  HACK
+                </h1>
+                <span className="text-club-red text-sm rec-dot pt-2">●</span>
               </div>
             </header>
 
-            {/* Main */}
-            <main className="flex-1 flex flex-col md:flex-row">
-
-              {/* Left – mic breathing room + listening rings on desktop */}
-              <div className="hidden md:flex flex-1 items-center justify-center">
-                {phase === 'listening' && (
-                  <div className="relative flex items-center justify-center" style={{ width: 220, height: 220 }}>
-                    <div className="ring-pulse"   style={{ position: 'absolute', width: 220, height: 220 }} />
-                    <div className="ring-pulse-2" style={{ position: 'absolute', width: 160, height: 160 }} />
-                    <div className="ring-pulse-3" style={{ position: 'absolute', width: 100, height: 100 }} />
-                    <div className="w-4 h-4 rounded-full bg-club-red rec-dot" />
-                  </div>
-                )}
-              </div>
-
-              {/* Right – interactive panel */}
-              <div className="w-full md:w-96 flex flex-col justify-center px-6 md:pr-12 md:pl-6 py-8">
-
-                {/* Error banner */}
-                {micError && (
-                  <div className="mb-6 border border-club-red border-opacity-40 bg-red-950 bg-opacity-30 p-4">
-                    <p className="text-club-red-hot text-sm font-bold leading-relaxed">{micError}</p>
-                    <button
-                      onClick={() => setMicError('')}
-                      className="text-club-red text-[0.6rem] tracking-widest uppercase font-bold mt-2 opacity-50 hover:opacity-100 transition-opacity bg-transparent border-0 cursor-pointer font-courier"
-                    >
-                      [dismiss]
-                    </button>
-                  </div>
-                )}
-
-                {/* ── IDLE ── */}
-                {phase === 'idle' && (
-                  <div className="fade-up">
-                    <div className="mb-7">
-                      <p className="text-club-text text-sm leading-relaxed opacity-55">
-                        Step up to the mic.
-                      </p>
-                      <p className="text-club-gold text-sm leading-relaxed font-bold">
-                        Show us what you've got.
-                      </p>
-                    </div>
-
-                    <div className="flex flex-col gap-3">
-                      <PrimaryButton onClick={handleTellJoke}>
-                        TELL A JOKE
-                      </PrimaryButton>
-
-                      <Divider />
-
-                      <GhostButton onClick={handleStealJoke}>
-                        STEAL A JOKE
-                      </GhostButton>
-
-                      <p className="text-club-text text-[0.55rem] tracking-[0.35em] uppercase opacity-20 text-center mt-2">
-                        Microphone Access Required
-                      </p>
-                    </div>
-
-                    {/* Film-strip decoration */}
-                    <div className="mt-8 film-strip">
-                      {Array.from({ length: 28 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className="film-tick"
-                          style={{ background: i % 2 === 0 ? 'rgba(201,150,58,0.35)' : 'rgba(201,150,58,0.08)' }}
-                        />
-                      ))}
-                    </div>
-                    <p className="text-[0.5rem] tracking-[0.35em] uppercase text-center mt-2 opacity-25 text-club-gold">
-                      — Comedy Film —
-                    </p>
-                  </div>
-                )}
-
-                {/* ── STEAL SETUP ── */}
-                {phase === 'steal-setup' && (
-                  <JokeCard
-                    joke={stolenJoke}
-                    onStart={handleStartReading}
-                    onBack={handleReset}
-                  />
-                )}
-
-                {/* ── LISTENING ── */}
-                {phase === 'listening' && (
-                  <ListeningIndicator jokeType={jokeType} onStop={stopRecording} />
-                )}
-
-                {/* ── PROCESSING ── */}
-                {phase === 'processing' && (
-                  <div className="text-center py-12 fade-up">
-                    <div className="flex justify-center items-end gap-1 mb-4" style={{ height: 36 }}>
-                      {[0, 1, 2, 3, 4].map(i => (
-                        <div
-                          key={i}
-                          className="process-bar"
-                          style={{ animationDelay: `${i * 0.1}s` }}
-                        />
-                      ))}
-                    </div>
-                    <p className="text-club-text text-[0.6rem] tracking-[0.45em] uppercase opacity-40">
-                      Deliberating...
-                    </p>
-                  </div>
-                )}
-
-                {/* ── CRITIQUE ── */}
-                {phase === 'critique' && (
-                  <CritiqueDisplay
-                    text={critique}
-                    jokeType={jokeType}
-                    onWatchFilm={handleWatchFilm}
-                    onTryAgain={handleReset}
-                  />
-                )}
-              </div>
-            </main>
-
-            {/* Mobile listening rings */}
-            {phase === 'listening' && (
-              <div
-                className="md:hidden absolute inset-0 flex items-center justify-center pointer-events-none"
-                style={{ paddingBottom: '240px' }}
-              >
-                <div className="relative flex items-center justify-center" style={{ width: 180, height: 180 }}>
-                  <div className="ring-pulse"   style={{ position: 'absolute', width: 180, height: 180 }} />
-                  <div className="ring-pulse-2" style={{ position: 'absolute', width: 120, height: 120 }} />
-                  <div className="ring-pulse-3" style={{ position: 'absolute', width: 70,  height: 70 }} />
-                  <div className="w-3 h-3 rounded-full bg-club-red rec-dot" />
-                </div>
+            {/* Error banner */}
+            {micError && (
+              <div className="mx-8 mb-2 border border-club-red border-opacity-40 bg-red-950 bg-opacity-30 p-3 flex items-start justify-between gap-4">
+                <p className="text-club-red-hot text-sm font-bold">{micError}</p>
+                <button
+                  onClick={() => setMicError('')}
+                  className="text-club-red text-[0.6rem] tracking-widest uppercase font-bold opacity-50 hover:opacity-100 transition-opacity bg-transparent border-0 cursor-pointer font-courier flex-shrink-0"
+                >
+                  ✕
+                </button>
               </div>
             )}
 
-            {/* Footer */}
-            <footer className="flex-shrink-0 py-4 px-6 md:px-12 flex justify-between">
-              <p className="text-club-text text-[0.5rem] tracking-[0.3em] uppercase opacity-10">
-                © {new Date().getFullYear()} All Jokes Stolen
-              </p>
-              <p className="text-club-text text-[0.5rem] tracking-[0.3em] uppercase opacity-10">
-                No Comedians Were Harmed
-              </p>
-            </footer>
+            {/* ── Three-column main ── */}
+            <main className="flex-1 flex flex-col md:flex-row">
+
+              {/* LEFT — Tell a Joke */}
+              <div className="flex-1 flex" style={{ minHeight: 260 }}>
+                {phase === 'idle' && (
+                  <PanelButton onClick={handleTellJoke} variant="gold">
+                    TELL A JOKE
+                  </PanelButton>
+                )}
+                {showingTellListen && (
+                  <div className="flex-1 flex items-center justify-center p-8">
+                    <ListeningIndicator onStop={stopRecording} />
+                  </div>
+                )}
+              </div>
+
+              {/* CENTER — mic breathing room, rings, critique, processing */}
+              <div
+                className="hidden md:flex flex-col items-center justify-center"
+                style={{ flex: '0 0 38%' }}
+              >
+                {phase === 'listening' && <Rings />}
+                {phase === 'processing' && (
+                  <div className="text-center fade-up">
+                    <div className="flex justify-center items-end gap-1 mb-3" style={{ height: 36 }}>
+                      {[0,1,2,3,4].map(i => (
+                        <div key={i} className="process-bar" style={{ animationDelay: `${i * 0.1}s` }} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {phase === 'critique' && (
+                  <div className="w-full px-8">
+                    <CritiqueDisplay
+                      text={critique}
+                      jokeType={jokeType}
+                      onWatchFilm={() => setPhase('film')}
+                      onTryAgain={handleReset}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Mobile center content */}
+              <div className="md:hidden flex flex-col items-center justify-center py-6">
+                {phase === 'listening' && <Rings />}
+                {phase === 'processing' && (
+                  <div className="flex justify-center items-end gap-1" style={{ height: 36 }}>
+                    {[0,1,2,3,4].map(i => (
+                      <div key={i} className="process-bar" style={{ animationDelay: `${i * 0.1}s` }} />
+                    ))}
+                  </div>
+                )}
+                {phase === 'critique' && (
+                  <div className="w-full px-8">
+                    <CritiqueDisplay
+                      text={critique}
+                      jokeType={jokeType}
+                      onWatchFilm={() => setPhase('film')}
+                      onTryAgain={handleReset}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* RIGHT — Steal a Joke */}
+              <div className="flex-1 flex" style={{ minHeight: 260 }}>
+                {phase === 'idle' && (
+                  <PanelButton onClick={handleStealJoke} variant="ghost">
+                    STEAL A JOKE
+                  </PanelButton>
+                )}
+                {showingSteal && (
+                  <div className="flex-1 flex items-center justify-center p-6 md:p-8">
+                    <JokeCard
+                      intro={stealIntro}
+                      joke={stolenJoke}
+                      isRecording={phase === 'listening'}
+                      onStart={startListening}
+                      onStop={stopRecording}
+                    />
+                  </div>
+                )}
+              </div>
+
+            </main>
           </>
         )}
       </div>
@@ -399,70 +353,42 @@ export default function App() {
   );
 }
 
-// ─── Shared micro-components ──────────────────────────────────────────────────
+// ─── PanelButton ──────────────────────────────────────────────────────────────
 
-function PrimaryButton({ onClick, children }) {
+function PanelButton({ onClick, variant, children }) {
   const [hovered, setHovered] = useState(false);
+  const isGold = variant === 'gold';
   return (
     <button
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        width: '100%',
-        border: '2px solid #c9963a',
-        background: hovered ? '#c9963a' : 'transparent',
-        color: hovered ? '#080808' : '#c9963a',
-        padding: '1rem 2rem',
-        fontSize: '0.95rem',
+        flex: 1,
+        border: 'none',
+        borderTop: isGold
+          ? `2px solid ${hovered ? '#f5c842' : 'rgba(201,150,58,0.6)'}`
+          : `2px solid ${hovered ? 'rgba(240,235,224,0.5)' : 'rgba(240,235,224,0.18)'}`,
+        borderBottom: isGold
+          ? `2px solid ${hovered ? '#f5c842' : 'rgba(201,150,58,0.6)'}`
+          : `2px solid ${hovered ? 'rgba(240,235,224,0.5)' : 'rgba(240,235,224,0.18)'}`,
+        background: hovered
+          ? isGold ? 'rgba(201,150,58,0.12)' : 'rgba(240,235,224,0.06)'
+          : 'transparent',
+        color: isGold
+          ? (hovered ? '#f5c842' : '#c9963a')
+          : (hovered ? '#f0ebe0' : 'rgba(240,235,224,0.38)'),
+        fontSize: 'clamp(1.1rem, 2.2vw, 1.65rem)',
         fontWeight: 700,
-        letterSpacing: '0.22em',
+        letterSpacing: '0.2em',
         textTransform: 'uppercase',
         cursor: 'pointer',
         fontFamily: "'Courier Prime', 'Courier New', Courier, monospace",
-        transform: hovered ? 'scale(1.02)' : 'scale(1)',
-        transition: 'all 0.14s ease',
+        transition: 'all 0.18s ease',
+        padding: '2rem',
       }}
     >
       {children}
     </button>
-  );
-}
-
-function GhostButton({ onClick, children }) {
-  const [hovered, setHovered] = useState(false);
-  return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        width: '100%',
-        border: `1px solid ${hovered ? 'rgba(240,235,224,0.55)' : 'rgba(240,235,224,0.2)'}`,
-        background: 'transparent',
-        color: hovered ? '#f0ebe0' : 'rgba(240,235,224,0.42)',
-        padding: '1rem 2rem',
-        fontSize: '0.95rem',
-        fontWeight: 700,
-        letterSpacing: '0.22em',
-        textTransform: 'uppercase',
-        cursor: 'pointer',
-        fontFamily: "'Courier Prime', 'Courier New', Courier, monospace",
-        transform: hovered ? 'scale(1.02)' : 'scale(1)',
-        transition: 'all 0.14s ease',
-      }}
-    >
-      {children}
-    </button>
-  );
-}
-
-function Divider() {
-  return (
-    <div className="flex items-center gap-3 my-1">
-      <div className="flex-1 h-px" style={{ background: 'rgba(240,235,224,0.12)' }} />
-      <span className="text-club-text text-[0.6rem] tracking-[0.45em] font-bold opacity-25">OR</span>
-      <div className="flex-1 h-px" style={{ background: 'rgba(240,235,224,0.12)' }} />
-    </div>
   );
 }

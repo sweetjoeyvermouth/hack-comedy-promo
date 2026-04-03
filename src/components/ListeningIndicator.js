@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 // 18 bars with staggered animation delays for an organic waveform look
 const BAR_COUNT = 18;
 
-export default function ListeningIndicator({ jokeType, onStop }) {
+export default function ListeningIndicator({ onStop }) {
   const [elapsed, setElapsed] = useState(0);
   const [stopHovered, setStopHovered] = useState(false);
 
@@ -70,23 +70,6 @@ export default function ListeningIndicator({ jokeType, onStop }) {
         }}
       >
         {fmt(elapsed)}
-      </p>
-
-      {/* Hint */}
-      <p
-        style={{
-          color: 'rgba(240,235,224,0.48)',
-          fontSize: '0.78rem',
-          lineHeight: 1.65,
-          marginBottom: '1.6rem',
-          fontFamily: "'Courier Prime', 'Courier New', Courier, monospace",
-        }}
-      >
-        {jokeType === 'steal' ? 'Reading...' : "We're listening..."}
-        <br />
-        <span style={{ fontSize: '0.62rem', color: 'rgba(240,235,224,0.24)' }}>
-          Stops automatically after silence
-        </span>
       </p>
 
       {/* Done button */}
