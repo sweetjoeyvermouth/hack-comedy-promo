@@ -177,7 +177,7 @@ export default function App() {
   const startCrowd = useCallback(() => {
     if (crowdStarted.current || !crowdRef.current) return;
     crowdStarted.current = true;
-    crowdRef.current.volume = 0.18;
+    crowdRef.current.volume = 0.45;
     crowdRef.current.play().catch(() => {});
   }, []);
 
