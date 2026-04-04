@@ -198,18 +198,18 @@ export default function App() {
     }
   }, []);
 
-  // Start on first mousemove (desktop) or touchstart (mobile)
+  // Start on first pointerdown (covers mouse + touch, trusted by browsers for audio)
   useEffect(() => {
     const onGesture = () => {
       startCrowd();
-      document.removeEventListener('mousemove', onGesture);
-      document.removeEventListener('touchstart', onGesture);
+      document.removeEventListener('pointerdown', onGesture);
+      document.removeEventListener('keydown', onGesture);
     };
-    document.addEventListener('mousemove', onGesture);
-    document.addEventListener('touchstart', onGesture);
+    document.addEventListener('pointerdown', onGesture);
+    document.addEventListener('keydown', onGesture);
     return () => {
-      document.removeEventListener('mousemove', onGesture);
-      document.removeEventListener('touchstart', onGesture);
+      document.removeEventListener('pointerdown', onGesture);
+      document.removeEventListener('keydown', onGesture);
     };
   }, [startCrowd]);
 
