@@ -1,106 +1,96 @@
-import React, { useState } from 'react';
+import React from 'react';
+
+const JOAN = "'Joan', 'Georgia', serif";
 
 export default function FilmEmbed({ vimeoId, onBack }) {
-  const [backHovered, setBackHovered] = useState(false);
-
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center px-6 py-10 fade-up"
-      style={{ background: '#080808' }}
+      className="fade-up"
+      style={{
+        minHeight: '100dvh',
+        background: '#080808',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: '2rem 2rem 2.5rem',
+      }}
     >
-      <div className="w-full" style={{ maxWidth: 900 }}>
-
-        {/* Title block */}
-        <div className="text-center mb-8">
-          <p
-            className="font-bold uppercase"
-            style={{
-              color: '#c9963a',
-              fontSize: '0.58rem',
-              letterSpacing: '0.5em',
-              opacity: 0.75,
-              marginBottom: '0.5rem',
-              fontFamily: "'Joan', 'Georgia', serif",
-            }}
-          >
-            Now Showing
-          </p>
-          <h2
-            className="font-bold uppercase"
-            style={{
-              color: '#f0ebe0',
-              fontSize: 'clamp(2.2rem, 7vw, 4rem)',
-              letterSpacing: '-0.025em',
-              lineHeight: 0.95,
-              fontFamily: "'Joan', 'Georgia', serif",
-            }}
-          >
-            HACK
-          </h2>
-          <p
-            className="font-bold"
-            style={{
-              color: 'rgba(201,150,58,0.38)',
-              fontSize: '0.6rem',
-              letterSpacing: '0.28em',
-              marginTop: '0.6rem',
-              fontFamily: "'Joan', 'Georgia', serif",
-            }}
-          >
-            [ IT WASN'T YOUR MATERIAL ]
-          </p>
-        </div>
-
-        {/* Responsive Vimeo embed */}
-        <div
+      {/* Logo + credit — centered at top */}
+      <div style={{ textAlign: 'center', marginBottom: '1.8rem' }}>
+        <img
+          src="/assets/logo.png"
+          alt="3 Months of Killing"
           style={{
-            position: 'relative',
-            paddingBottom: '56.25%', // 16:9
-            height: 0,
-            overflow: 'hidden',
-            border: '1px solid rgba(201,150,58,0.2)',
-            background: '#000',
+            height: 'clamp(72px, 10vw, 110px)',
+            width: 'auto',
+            display: 'block',
+            margin: '0 auto',
+            filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.7))',
           }}
-        >
+        />
+        <p style={{
+          color: 'rgba(240,235,224,0.55)',
+          fontSize: 'clamp(0.55rem, 1vw, 0.78rem)',
+          letterSpacing: '0.28em',
+          textTransform: 'uppercase',
+          marginTop: '0.5rem',
+          fontFamily: JOAN,
+        }}>
+          Written by Jon Ryan Sugimoto
+        </p>
+      </div>
+
+      {/* Video — takes up most of the remaining space */}
+      <div style={{
+        width: '100%',
+        maxWidth: 1100,
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+      }}>
+        <div style={{
+          position: 'relative',
+          paddingBottom: '56.25%',
+          height: 0,
+          overflow: 'hidden',
+          background: '#000',
+          flex: 1,
+        }}>
           <iframe
             src={`https://player.vimeo.com/video/${vimeoId}?autoplay=1&color=c9963a&title=0&byline=0&portrait=0`}
             style={{
               position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
+              top: 0, left: 0,
+              width: '100%', height: '100%',
               border: 'none',
             }}
             allow="autoplay; fullscreen; picture-in-picture"
             allowFullScreen
-            title="HACK — Comedy Film"
+            title="3 Months of Killing"
           />
         </div>
-
-        {/* Back link */}
-        <div className="text-center mt-8">
-          <button
-            onClick={onBack}
-            onMouseEnter={() => setBackHovered(true)}
-            onMouseLeave={() => setBackHovered(false)}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: backHovered ? 'rgba(240,235,224,0.6)' : 'rgba(240,235,224,0.22)',
-              fontSize: '0.6rem',
-              letterSpacing: '0.4em',
-              textTransform: 'uppercase',
-              cursor: 'pointer',
-              fontFamily: "'Joan', 'Georgia', serif",
-              fontWeight: 700,
-              transition: 'color 0.15s',
-            }}
-          >
-            ← Try Your Luck Again
-          </button>
-        </div>
       </div>
+
+      {/* Back link */}
+      <button
+        onClick={onBack}
+        style={{
+          marginTop: '1.4rem',
+          background: 'none',
+          border: 'none',
+          color: 'rgba(240,235,224,0.22)',
+          fontSize: 'clamp(0.7rem, 1.1vw, 0.9rem)',
+          letterSpacing: '0.25em',
+          fontFamily: JOAN,
+          cursor: 'pointer',
+          transition: 'color 0.15s',
+          padding: '0.4rem 0',
+        }}
+        onMouseEnter={e => (e.currentTarget.style.color = 'rgba(240,235,224,0.55)')}
+        onMouseLeave={e => (e.currentTarget.style.color = 'rgba(240,235,224,0.22)')}
+      >
+        ← Try again
+      </button>
     </div>
   );
 }

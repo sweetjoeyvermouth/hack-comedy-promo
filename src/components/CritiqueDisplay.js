@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 
-const CHAR_DELAY_MS = 32;
+const JOAN = "'Joan', 'Georgia', serif";
+const CHAR_DELAY_MS = 28;
+// Auto-advance to film this many ms after typewriter finishes
+const AUTO_ADVANCE_MS = 3500;
 
 export default function CritiqueDisplay({ text, jokeType, onWatchFilm, onTryAgain }) {
   const [displayed, setDisplayed] = useState('');
   const [complete, setComplete]   = useState(false);
-  const [filmHovered, setFilmHovered] = useState(false);
-  // filmHovered used on the just-play-the-video button
 
-  const isSteal = jokeType === 'steal';
+  const isSteal     = jokeType === 'steal';
   const accentColor = isSteal ? '#c9963a' : '#dc2626';
 
+  // Typewriter
   useEffect(() => {
     setDisplayed('');
     setComplete(false);
@@ -26,105 +28,85 @@ export default function CritiqueDisplay({ text, jokeType, onWatchFilm, onTryAgai
     return () => clearInterval(id);
   }, [text]);
 
+  // Auto-advance to film once typewriter finishes
+  useEffect(() => {
+    if (!complete) return;
+    const t = setTimeout(() => onWatchFilm(), AUTO_ADVANCE_MS);
+    return () => clearTimeout(t);
+  }, [complete, onWatchFilm]);
+
   return (
     <div className="fade-up">
       {/* Label */}
-      <p
-        className="font-bold uppercase mb-4"
-        style={{
-          color: accentColor,
-          fontSize: '0.58rem',
-          letterSpacing: '0.45em',
-          opacity: 0.65,
-        }}
-      >
+      <p style={{
+        color: accentColor,
+        fontSize: 'clamp(0.75rem, 1.2vw, 1rem)',
+        letterSpacing: '0.38em',
+        textTransform: 'uppercase',
+        opacity: 0.7,
+        fontFamily: JOAN,
+        marginBottom: '0.75rem',
+      }}>
         {isSteal ? '— Judge\'s Notes —' : '— Audience Review —'}
       </p>
 
       {/* Quote mark */}
-      <span
-        className="block font-bold leading-none mb-2"
-        style={{ color: accentColor, fontSize: '3rem', opacity: 0.25, lineHeight: 1 }}
-      >
+      <span style={{
+        display: 'block',
+        color: accentColor,
+        fontSize: 'clamp(3rem, 5vw, 5rem)',
+        opacity: 0.2,
+        lineHeight: 1,
+        marginBottom: '0.25rem',
+        fontFamily: JOAN,
+      }}>
         "
       </span>
 
       {/* Typewriter text */}
-      <div
-        style={{
-          borderLeft: `3px solid ${accentColor}`,
-          paddingLeft: '1.2rem',
-          marginBottom: '2rem',
-          minHeight: '4rem',
-        }}
-      >
-        <p
-          className="font-bold"
-          style={{
-            color: '#f0ebe0',
-            fontSize: '1.05rem',
-            lineHeight: 1.62,
-            fontFamily: "'Joan', 'Georgia', serif",
-          }}
-        >
+      <div style={{
+        borderLeft: `3px solid ${accentColor}`,
+        paddingLeft: '1.4rem',
+        marginBottom: '2.5rem',
+        minHeight: '5rem',
+      }}>
+        <p style={{
+          color: '#f0ebe0',
+          fontSize: 'clamp(1.4rem, 2.8vw, 2.2rem)',
+          lineHeight: 1.55,
+          fontFamily: JOAN,
+          margin: 0,
+          textShadow: '0 2px 12px rgba(0,0,0,0.8)',
+        }}>
           {displayed}
           {!complete && (
-            <span className="tw-cursor" style={{ color: accentColor }}>
-              |
-            </span>
+            <span className="tw-cursor" style={{ color: accentColor }}>|</span>
           )}
         </p>
       </div>
 
-      {/* Actions — appear once typewriter finishes */}
+      {/* Try again — only escape hatch, auto-advance handles the film */}
       {complete && (
-        <div className="fade-up flex flex-col gap-3">
-          {/* Just play the video — asset button */}
-          <button
-            onClick={onWatchFilm}
-            onMouseEnter={() => setFilmHovered(true)}
-            onMouseLeave={() => setFilmHovered(false)}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '0.75rem 0',
-              display: 'flex',
-              justifyContent: 'center',
-              opacity: filmHovered ? 1 : 0.85,
-              transform: filmHovered ? 'scale(1.04)' : 'scale(1)',
-              transition: 'all 0.15s ease',
-              filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.5))',
-            }}
-          >
-            <img src="/assets/just-play-the-video.png" alt="Just play the video" style={{ height: 22, width: 'auto' }} />
-          </button>
-
-          {/* Try again */}
-          <button
-            onClick={onTryAgain}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'rgba(240,235,224,0.22)',
-              fontSize: '0.6rem',
-              letterSpacing: '0.38em',
-              textTransform: 'uppercase',
-              cursor: 'pointer',
-              fontFamily: "'Joan', 'Georgia', serif",
-              fontWeight: 700,
-              padding: '0.5rem 0',
-              textAlign: 'center',
-              display: 'block',
-              width: '100%',
-              transition: 'color 0.15s',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.color = 'rgba(240,235,224,0.5)')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(240,235,224,0.22)')}
-          >
-            Try Again (Brave)
-          </button>
-        </div>
+        <button
+          onClick={onTryAgain}
+          className="fade-up"
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'rgba(240,235,224,0.28)',
+            fontSize: 'clamp(0.75rem, 1.2vw, 1rem)',
+            letterSpacing: '0.25em',
+            fontFamily: JOAN,
+            cursor: 'pointer',
+            padding: '0.4rem 0',
+            display: 'block',
+            transition: 'color 0.15s',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'rgba(240,235,224,0.6)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(240,235,224,0.28)')}
+        >
+          Try again
+        </button>
       )}
     </div>
   );

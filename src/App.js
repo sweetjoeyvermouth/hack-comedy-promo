@@ -238,7 +238,7 @@ export default function App() {
                 src="/assets/logo.png"
                 alt="3 Months of Killing"
                 style={{
-                  height: 'clamp(72px, 10vw, 110px)',
+                  height: 'clamp(90px, 13vw, 145px)',
                   width: 'auto',
                   display: 'block',
                   filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.7))',
@@ -246,7 +246,7 @@ export default function App() {
               />
               <p style={{
                 color: 'rgba(240,235,224,0.6)',
-                fontSize: 'clamp(0.45rem, 0.9vw, 0.65rem)',
+                fontSize: 'clamp(0.6rem, 1vw, 0.85rem)',
                 letterSpacing: '0.25em',
                 textTransform: 'uppercase',
                 marginTop: '0.4rem',
@@ -277,12 +277,12 @@ export default function App() {
             }}>
               <h1 style={{
                 color: '#f0ebe0',
-                fontSize: 'clamp(2rem, 5vw, 3.8rem)',
+                fontSize: 'clamp(2.8rem, 6.5vw, 5.5rem)',
                 fontFamily: JOAN,
                 fontWeight: 400,
                 letterSpacing: '0.12em',
                 margin: 0,
-                textShadow: '0 2px 16px rgba(0,0,0,0.7)',
+                textShadow: '0 2px 20px rgba(0,0,0,0.8)',
               }}>
                 TELL A JOKE
               </h1>
@@ -290,12 +290,12 @@ export default function App() {
               {/* "The audience is listening" */}
               {phase === 'listening' && jokeType === 'tell' && (
                 <p className="fade-up" style={{
-                  color: 'rgba(240,235,224,0.72)',
-                  fontSize: 'clamp(0.85rem, 1.8vw, 1.15rem)',
+                  color: 'rgba(240,235,224,0.78)',
+                  fontSize: 'clamp(1.1rem, 2.2vw, 1.6rem)',
                   fontFamily: JOAN,
                   letterSpacing: '0.08em',
-                  marginTop: '0.4rem',
-                  textShadow: '0 1px 8px rgba(0,0,0,0.8)',
+                  marginTop: '0.5rem',
+                  textShadow: '0 1px 10px rgba(0,0,0,0.9)',
                 }}>
                   The audience is listening
                 </p>
@@ -351,21 +351,24 @@ export default function App() {
               />
             )}
 
-            {/* ── CRITIQUE ── */}
+            {/* ── CRITIQUE — left of the mic ── */}
             {phase === 'critique' && (
               <div className="fade-up" style={{
-                position: 'absolute', inset: 0,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                padding: '2rem',
+                position: 'absolute',
+                left: '4%',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                width: 'min(42%, 540px)',
+                padding: '1.5rem 2rem',
+                background: 'rgba(0,0,0,0.45)',
+                backdropFilter: 'blur(8px)',
               }}>
-                <div style={{ width: '100%', maxWidth: 560 }}>
-                  <CritiqueDisplay
-                    text={critique}
-                    jokeType={jokeType}
-                    onWatchFilm={() => setPhase('film')}
-                    onTryAgain={handleReset}
-                  />
-                </div>
+                <CritiqueDisplay
+                  text={critique}
+                  jokeType={jokeType}
+                  onWatchFilm={() => setPhase('film')}
+                  onTryAgain={handleReset}
+                />
               </div>
             )}
 
@@ -411,7 +414,7 @@ function BoxButton({ onClick, children, small, disabled, style = {} }) {
         border: `1px solid ${hov ? 'rgba(240,228,200,0.65)' : 'rgba(240,228,200,0.38)'}`,
         color: '#f0ebe0',
         fontFamily: JOAN,
-        fontSize: small ? 'clamp(0.75rem, 1.2vw, 0.95rem)' : 'clamp(1.1rem, 2.2vw, 1.6rem)',
+        fontSize: small ? 'clamp(0.85rem, 1.4vw, 1.1rem)' : 'clamp(1.4rem, 2.8vw, 2.1rem)',
         letterSpacing: small ? '0.06em' : '0.04em',
         fontWeight: 400,
         padding: small ? '0.5rem 1.1rem' : '0.85rem 2.2rem',
@@ -459,7 +462,7 @@ function DoneButton({ onClick }) {
         background: hov ? 'rgba(220,38,38,0.22)' : 'rgba(0,0,0,0.5)',
         color: '#ef4444',
         padding: '0.7rem 2.4rem',
-        fontSize: 'clamp(0.85rem, 1.5vw, 1.05rem)',
+        fontSize: 'clamp(1rem, 1.8vw, 1.3rem)',
         fontFamily: JOAN,
         letterSpacing: '0.15em',
         cursor: 'pointer',
