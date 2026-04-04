@@ -176,9 +176,12 @@ export default function App() {
 
   const startCrowd = useCallback(() => {
     if (crowdStarted.current || !crowdRef.current) return;
-    crowdStarted.current = true;
     crowdRef.current.volume = 0.45;
-    crowdRef.current.play().catch(() => {});
+    const p = crowdRef.current.play();
+    if (p) {
+      crowdStarted.current = true;
+      p.catch(() => { crowdStarted.current = false; }); // reset so click fallback can retry
+    }
   }, []);
 
   // Try autoplay on mount; fall back to first click anywhere
