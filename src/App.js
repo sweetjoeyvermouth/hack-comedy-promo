@@ -359,6 +359,7 @@ export default function App() {
           <video
             ref={bgVideoRef}
             src="/assets/backgroundvideo.mp4"
+            poster="/assets/bg-poster.jpg"
             muted
             playsInline
             preload="auto"
