@@ -20,7 +20,7 @@ export default function FilmEmbed({ vimeoId, onBack }) {
               letterSpacing: '0.5em',
               opacity: 0.75,
               marginBottom: '0.5rem',
-              fontFamily: "'Courier Prime', 'Courier New', Courier, monospace",
+              fontFamily: "'Joan', 'Georgia', serif",
             }}
           >
             Now Showing
@@ -32,7 +32,7 @@ export default function FilmEmbed({ vimeoId, onBack }) {
               fontSize: 'clamp(2.2rem, 7vw, 4rem)',
               letterSpacing: '-0.025em',
               lineHeight: 0.95,
-              fontFamily: "'Courier Prime', 'Courier New', Courier, monospace",
+              fontFamily: "'Joan', 'Georgia', serif",
             }}
           >
             HACK
@@ -44,7 +44,7 @@ export default function FilmEmbed({ vimeoId, onBack }) {
               fontSize: '0.6rem',
               letterSpacing: '0.28em',
               marginTop: '0.6rem',
-              fontFamily: "'Courier Prime', 'Courier New', Courier, monospace",
+              fontFamily: "'Joan', 'Georgia', serif",
             }}
           >
             [ IT WASN'T YOUR MATERIAL ]
@@ -92,7 +92,7 @@ export default function FilmEmbed({ vimeoId, onBack }) {
               letterSpacing: '0.4em',
               textTransform: 'uppercase',
               cursor: 'pointer',
-              fontFamily: "'Courier Prime', 'Courier New', Courier, monospace",
+              fontFamily: "'Joan', 'Georgia', serif",
               fontWeight: 700,
               transition: 'color 0.15s',
             }}

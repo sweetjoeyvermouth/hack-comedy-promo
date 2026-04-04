@@ -64,7 +64,7 @@ export default function CritiqueDisplay({ text, jokeType, onWatchFilm, onTryAgai
             color: '#f0ebe0',
             fontSize: '1.05rem',
             lineHeight: 1.62,
-            fontFamily: "'Courier Prime', 'Courier New', Courier, monospace",
+            fontFamily: "'Joan', 'Georgia', serif",
           }}
         >
           {displayed}
@@ -111,7 +111,7 @@ export default function CritiqueDisplay({ text, jokeType, onWatchFilm, onTryAgai
               letterSpacing: '0.38em',
               textTransform: 'uppercase',
               cursor: 'pointer',
-              fontFamily: "'Courier Prime', 'Courier New', Courier, monospace",
+              fontFamily: "'Joan', 'Georgia', serif",
               fontWeight: 700,
               padding: '0.5rem 0',
               textAlign: 'center',

@@ -3,6 +3,9 @@ import Teleprompter from './components/Teleprompter';
 import CritiqueDisplay from './components/CritiqueDisplay';
 import FilmEmbed from './components/FilmEmbed';
 
+// ─── Font shorthand ────────────────────────────────────────────────────────────
+const JOAN = "'Joan', 'Georgia', serif";
+
 // ─── Arrays ────────────────────────────────────────────────────────────────────
 
 const TELL_RESPONSES = [
@@ -87,10 +90,10 @@ const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 // ─── App ───────────────────────────────────────────────────────────────────────
 
 export default function App() {
-  // phase: 'idle' | 'listening' | 'laughing' | 'critique' | 'film'
+  // phase: 'idle' | 'listening' | 'critique' | 'film'
   const [phase, setPhase]           = useState('idle');
-  const [jokeType, setJokeType]     = useState(null);   // 'tell' | 'steal'
-  const [stolenJoke, setStolenJoke] = useState(null);   // { text, comedian }
+  const [jokeType, setJokeType]     = useState(null);
+  const [stolenJoke, setStolenJoke] = useState(null);
   const [stealIntro, setStealIntro] = useState('');
   const [critique, setCritique]     = useState('');
   const [micError, setMicError]     = useState('');
@@ -102,7 +105,6 @@ export default function App() {
   const maxTimeoutRef = useRef(null);
   const laughRef      = useRef(null);
 
-  // ─── Audio / resource cleanup ─────────────────────────────────
   const cleanup = useCallback(() => {
     if (animFrameRef.current)  { cancelAnimationFrame(animFrameRef.current); animFrameRef.current = null; }
     if (maxTimeoutRef.current) { clearTimeout(maxTimeoutRef.current);        maxTimeoutRef.current = null; }
@@ -110,39 +112,27 @@ export default function App() {
     if (audioCtxRef.current)   { audioCtxRef.current.close().catch(() => {}); audioCtxRef.current = null; }
   }, []);
 
-  // ─── Laugh → critique transition ─────────────────────────────
-  const transitionAfterLaugh = useCallback((pool) => {
-    setPhase('laughing');
-    const critique = pick(pool);
-
+  // Laugh starts playing, then we bridge into critique after ~1.2s
+  // Audio continues under the new content — natural transition
+  const playLaughAndBridge = useCallback((critiqueText) => {
     if (laughRef.current) {
       laughRef.current.currentTime = 0;
       const p = laughRef.current.play();
       if (p) p.catch(() => {});
-      laughRef.current.onended = () => {
-        setCritique(critique);
-        setPhase('critique');
-      };
-      // Safety fallback if audio stalls
-      setTimeout(() => {
-        if (laughRef.current && !laughRef.current.paused) return;
-        setCritique(critique);
-        setPhase('critique');
-      }, 4000);
-    } else {
-      setCritique(critique);
-      setPhase('critique');
     }
+    // Bridge: transition while laugh is still playing
+    setTimeout(() => {
+      setCritique(critiqueText);
+      setPhase('critique');
+    }, 1200);
   }, []);
 
-  // ─── Stop recording ───────────────────────────────────────────
   const stopRecording = useCallback(() => {
     cleanup();
     const pool = jokeTypeRef.current === 'steal' ? STEAL_RESPONSES : TELL_RESPONSES;
-    transitionAfterLaugh(pool);
-  }, [cleanup, transitionAfterLaugh]);
+    playLaughAndBridge(pick(pool));
+  }, [cleanup, playLaughAndBridge]);
 
-  // ─── Start mic + silence detection ───────────────────────────
   const startListening = useCallback(async () => {
     setMicError('');
     setPhase('listening');
@@ -192,7 +182,6 @@ export default function App() {
     }
   }, [cleanup, stopRecording]);
 
-  // ─── User actions ─────────────────────────────────────────────
   const handleTellJoke = () => {
     jokeTypeRef.current = 'tell';
     setJokeType('tell');
@@ -223,153 +212,136 @@ export default function App() {
 
   // ─── Render ───────────────────────────────────────────────────
   return (
-    <div
-      className="relative w-full overflow-hidden bg-black"
-      style={{ minHeight: '100dvh', fontFamily: "'Courier Prime','Courier New',Courier,monospace" }}
-    >
-      {/* Laugh track audio */}
+    <div className="relative w-full overflow-hidden bg-black" style={{ minHeight: '100dvh', fontFamily: JOAN }}>
+
       <audio ref={laughRef} src="/assets/laugh.wav" preload="auto" />
 
       {phase === 'film' ? (
         <FilmEmbed vimeoId={VIMEO_ID} onBack={handleReset} />
       ) : (
         <>
-          {/* ── Background ── */}
+          {/* Background */}
           <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style={{ backgroundImage: "url('/assets/bg.png')" }}
           />
-          {/* Overlay — dark enough to read, light enough to see the room */}
-          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.38)' }} />
+          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.35)' }} />
           <div className="grain-overlay" />
           <div className="scanlines" />
 
-          {/* ── UI Layer ── */}
+          {/* UI layer */}
           <div className="relative z-10" style={{ minHeight: '100dvh' }}>
 
-            {/* Logo — top left */}
-            <img
-              src="/assets/logo.png"
-              alt="3 Months of Killing"
-              style={{
-                position: 'absolute', top: 20, left: 24,
-                height: 52, width: 'auto',
-                filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.6))',
-              }}
-            />
+            {/* ── Logo — top left ── */}
+            <div style={{ position: 'absolute', top: 24, left: 32 }}>
+              <img
+                src="/assets/logo.png"
+                alt="3 Months of Killing"
+                style={{
+                  height: 'clamp(72px, 10vw, 110px)',
+                  width: 'auto',
+                  display: 'block',
+                  filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.7))',
+                }}
+              />
+              <p style={{
+                color: 'rgba(240,235,224,0.6)',
+                fontSize: 'clamp(0.45rem, 0.9vw, 0.65rem)',
+                letterSpacing: '0.25em',
+                textTransform: 'uppercase',
+                marginTop: '0.4rem',
+                fontFamily: JOAN,
+                textShadow: '0 1px 4px rgba(0,0,0,0.8)',
+              }}>
+                Written by Jon Ryan Sugimoto
+              </p>
+            </div>
 
-            {/* Just play the video — top right */}
-            <button
+            {/* ── Just play the video — top right ── */}
+            <BoxButton
               onClick={() => setPhase('film')}
-              style={{
-                position: 'absolute', top: 20, right: 24,
-                background: 'none', border: 'none', cursor: 'pointer', padding: '6px',
-                opacity: 0.7, transition: 'opacity 0.15s',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
+              style={{ position: 'absolute', top: 28, right: 32 }}
+              small
             >
-              <img src="/assets/just-play-the-video.png" alt="Just play the video" style={{ height: 18, width: 'auto' }} />
-            </button>
+              Just play the video
+            </BoxButton>
 
-            {/* TELL A JOKE header — top center */}
-            <div
-              style={{
-                position: 'absolute', top: 28, left: '50%',
-                transform: 'translateX(-50%)',
-                textAlign: 'center',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              <img src="/assets/tell-a-joke.png" alt="Tell a Joke" style={{ height: 22, width: 'auto' }} />
+            {/* ── TELL A JOKE header — top center ── */}
+            <div style={{
+              position: 'absolute',
+              top: 'clamp(28px, 5vh, 48px)',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              textAlign: 'center',
+              whiteSpace: 'nowrap',
+            }}>
+              <h1 style={{
+                color: '#f0ebe0',
+                fontSize: 'clamp(2rem, 5vw, 3.8rem)',
+                fontFamily: JOAN,
+                fontWeight: 400,
+                letterSpacing: '0.12em',
+                margin: 0,
+                textShadow: '0 2px 16px rgba(0,0,0,0.7)',
+              }}>
+                TELL A JOKE
+              </h1>
 
-              {/* "The audience is listening" — tell recording */}
+              {/* "The audience is listening" */}
               {phase === 'listening' && jokeType === 'tell' && (
-                <p
-                  className="fade-up"
-                  style={{
-                    color: '#f0ebe0',
-                    fontSize: '0.72rem',
-                    letterSpacing: '0.2em',
-                    marginTop: '0.35rem',
-                    opacity: 0.75,
-                  }}
-                >
+                <p className="fade-up" style={{
+                  color: 'rgba(240,235,224,0.72)',
+                  fontSize: 'clamp(0.85rem, 1.8vw, 1.15rem)',
+                  fontFamily: JOAN,
+                  letterSpacing: '0.08em',
+                  marginTop: '0.4rem',
+                  textShadow: '0 1px 8px rgba(0,0,0,0.8)',
+                }}>
                   The audience is listening
                 </p>
               )}
             </div>
 
-            {/* ── IDLE: Both buttons flanking the mic ── */}
+            {/* ── IDLE: Both buttons ── */}
             {phase === 'idle' && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '62%', left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 'clamp(120px, 20vw, 240px)',
-                }}
-              >
-                <ImgButton
-                  src="/assets/say-my-own-joke.png"
-                  alt="Say my own joke"
-                  onClick={handleTellJoke}
-                  height={28}
-                />
-                <ImgButton
-                  src="/assets/steal-a-joke.png"
-                  alt="Steal a joke"
-                  onClick={handleStealJoke}
-                  height={28}
-                />
+              <div style={{
+                position: 'absolute',
+                top: '57%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'clamp(100px, 16vw, 220px)',
+              }}>
+                <BoxButton onClick={handleTellJoke}>Say my own joke</BoxButton>
+                <BoxButton onClick={handleStealJoke}>Steal a joke</BoxButton>
               </div>
             )}
 
-            {/* ── TELL LISTENING: only "Say my own joke" + REC + Done ── */}
+            {/* ── TELL LISTENING: only "Say my own joke" stays, REC badge ── */}
             {phase === 'listening' && jokeType === 'tell' && (
               <>
-                {/* Left button stays, right disappears */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '62%', left: '50%',
-                    transform: 'translate(calc(-50% - clamp(60px, 10vw, 120px)), -50%)',
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
-                  }}
-                >
-                  <img src="/assets/say-my-own-joke.png" alt="Say my own joke" style={{ height: 28, width: 'auto', opacity: 0.65 }} />
+                <div style={{
+                  position: 'absolute',
+                  top: '57%',
+                  left: '50%',
+                  transform: 'translate(calc(-50% - clamp(80px, 12vw, 160px)), -50%)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 10,
+                }}>
+                  <BoxButton disabled style={{ opacity: 0.55, cursor: 'default' }}>
+                    Say my own joke
+                  </BoxButton>
                   <RecBadge />
                 </div>
 
-                {/* Waveform bars over center mic */}
-                <div
-                  style={{
-                    position: 'absolute', top: '62%', left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    display: 'flex', alignItems: 'center', gap: 3,
-                  }}
-                >
-                  {Array.from({ length: 9 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="waveform-bar"
-                      style={{
-                        background: 'rgba(220,38,38,0.7)',
-                        animationDelay: `${(i * 0.08) % 0.6}s`,
-                        animationDuration: `${0.38 + (i % 4) * 0.09}s`,
-                      }}
-                    />
-                  ))}
-                </div>
-
-                {/* Done */}
                 <DoneButton onClick={stopRecording} />
               </>
             )}
 
-            {/* ── STEAL LISTENING: Teleprompter overlay ── */}
+            {/* ── STEAL LISTENING: Teleprompter ── */}
             {phase === 'listening' && jokeType === 'steal' && stolenJoke && (
               <Teleprompter
                 intro={stealIntro}
@@ -379,43 +351,14 @@ export default function App() {
               />
             )}
 
-            {/* ── LAUGHING: brief transitional state ── */}
-            {phase === 'laughing' && (
-              <div
-                className="fade-up"
-                style={{
-                  position: 'absolute', inset: 0,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}
-              >
-                <div style={{ display: 'flex', gap: 6, alignItems: 'flex-end', height: 40 }}>
-                  {[0,1,2,3,4,5,6].map(i => (
-                    <div
-                      key={i}
-                      className="waveform-bar"
-                      style={{
-                        background: '#c9963a',
-                        animationDelay: `${i * 0.07}s`,
-                        animationDuration: `${0.38 + (i % 4) * 0.09}s`,
-                        opacity: 0.8,
-                      }}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
             {/* ── CRITIQUE ── */}
             {phase === 'critique' && (
-              <div
-                className="fade-up"
-                style={{
-                  position: 'absolute', inset: 0,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  padding: '2rem',
-                }}
-              >
-                <div style={{ width: '100%', maxWidth: 520 }}>
+              <div className="fade-up" style={{
+                position: 'absolute', inset: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                padding: '2rem',
+              }}>
+                <div style={{ width: '100%', maxWidth: 560 }}>
                   <CritiqueDisplay
                     text={critique}
                     jokeType={jokeType}
@@ -426,26 +369,22 @@ export default function App() {
               </div>
             )}
 
-            {/* ── Error banner ── */}
+            {/* ── Error ── */}
             {micError && (
-              <div
-                style={{
-                  position: 'absolute', bottom: 24, left: '50%',
-                  transform: 'translateX(-50%)',
-                  border: '1px solid rgba(220,38,38,0.5)',
-                  background: 'rgba(0,0,0,0.75)',
-                  padding: '0.75rem 1.25rem',
-                  display: 'flex', alignItems: 'center', gap: '1rem',
-                  maxWidth: 420,
-                }}
-              >
-                <p style={{ color: '#ef4444', fontSize: '0.8rem', fontWeight: 700, margin: 0 }}>{micError}</p>
-                <button
-                  onClick={() => setMicError('')}
-                  style={{ background: 'none', border: 'none', color: 'rgba(239,68,68,0.5)', cursor: 'pointer', fontSize: '1rem', lineHeight: 1, padding: 0, fontFamily: 'inherit' }}
-                >
-                  ✕
-                </button>
+              <div style={{
+                position: 'absolute', bottom: 28, left: '50%',
+                transform: 'translateX(-50%)',
+                border: '1px solid rgba(220,38,38,0.5)',
+                background: 'rgba(0,0,0,0.8)',
+                padding: '0.8rem 1.4rem',
+                display: 'flex', alignItems: 'center', gap: '1rem',
+                maxWidth: 440, backdropFilter: 'blur(4px)',
+              }}>
+                <p style={{ color: '#ef4444', fontSize: '0.9rem', fontFamily: JOAN, margin: 0 }}>{micError}</p>
+                <button onClick={() => setMicError('')} style={{
+                  background: 'none', border: 'none', color: 'rgba(239,68,68,0.5)',
+                  cursor: 'pointer', fontSize: '1rem', padding: 0, fontFamily: JOAN,
+                }}>✕</button>
               </div>
             )}
 
@@ -456,37 +395,50 @@ export default function App() {
   );
 }
 
-// ─── Small shared components ──────────────────────────────────────────────────
+// ─── Shared UI components ─────────────────────────────────────────────────────
 
-function ImgButton({ src, alt, onClick, height }) {
+// Dark bordered box button — matches the Figma style
+function BoxButton({ onClick, children, small, disabled, style = {} }) {
   const [hov, setHov] = useState(false);
+
   return (
     <button
-      onClick={onClick}
-      onMouseEnter={() => setHov(true)}
+      onClick={disabled ? undefined : onClick}
+      onMouseEnter={() => !disabled && setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
-        background: 'none', border: 'none', cursor: 'pointer',
-        padding: '10px 16px',
-        opacity: hov ? 1 : 0.82,
-        transform: hov ? 'scale(1.06)' : 'scale(1)',
-        transition: 'all 0.15s ease',
-        filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.5))',
+        background: hov ? 'rgba(20,15,10,0.82)' : 'rgba(8,6,4,0.70)',
+        border: `1px solid ${hov ? 'rgba(240,228,200,0.65)' : 'rgba(240,228,200,0.38)'}`,
+        color: '#f0ebe0',
+        fontFamily: JOAN,
+        fontSize: small ? 'clamp(0.75rem, 1.2vw, 0.95rem)' : 'clamp(1.1rem, 2.2vw, 1.6rem)',
+        letterSpacing: small ? '0.06em' : '0.04em',
+        fontWeight: 400,
+        padding: small ? '0.5rem 1.1rem' : '0.85rem 2.2rem',
+        cursor: disabled ? 'default' : 'pointer',
+        backdropFilter: 'blur(6px)',
+        transition: 'background 0.15s, border-color 0.15s, transform 0.15s',
+        transform: hov && !disabled ? 'scale(1.03)' : 'scale(1)',
+        whiteSpace: 'nowrap',
+        textShadow: '0 1px 6px rgba(0,0,0,0.6)',
+        ...style,
       }}
     >
-      <img src={src} alt={alt} style={{ height, width: 'auto', display: 'block' }} />
+      {children}
     </button>
   );
 }
 
 function RecBadge() {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-      <div
-        className="rec-dot"
-        style={{ width: 7, height: 7, borderRadius: '50%', background: '#dc2626', flexShrink: 0 }}
-      />
-      <span style={{ color: '#dc2626', fontSize: '0.55rem', letterSpacing: '0.5em', fontWeight: 700, textTransform: 'uppercase' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div className="rec-dot" style={{
+        width: 8, height: 8, borderRadius: '50%', background: '#dc2626', flexShrink: 0,
+      }} />
+      <span style={{
+        color: '#dc2626', fontSize: '0.6rem', letterSpacing: '0.5em',
+        fontWeight: 700, textTransform: 'uppercase', fontFamily: JOAN,
+      }}>
         REC
       </span>
     </div>
@@ -504,17 +456,15 @@ function DoneButton({ onClick }) {
         position: 'absolute', bottom: '8%', left: '50%',
         transform: 'translateX(-50%)',
         border: '1px solid rgba(220,38,38,0.5)',
-        background: hov ? 'rgba(220,38,38,0.2)' : 'rgba(0,0,0,0.4)',
+        background: hov ? 'rgba(220,38,38,0.22)' : 'rgba(0,0,0,0.5)',
         color: '#ef4444',
-        padding: '0.65rem 2rem',
-        fontSize: '0.75rem',
-        fontWeight: 700,
-        letterSpacing: '0.35em',
-        textTransform: 'uppercase',
+        padding: '0.7rem 2.4rem',
+        fontSize: 'clamp(0.85rem, 1.5vw, 1.05rem)',
+        fontFamily: JOAN,
+        letterSpacing: '0.15em',
         cursor: 'pointer',
-        fontFamily: "'Courier Prime','Courier New',Courier,monospace",
-        transition: 'background 0.15s',
         backdropFilter: 'blur(4px)',
+        transition: 'background 0.15s',
       }}
     >
       Done

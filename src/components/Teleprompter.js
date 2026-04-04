@@ -43,7 +43,7 @@ export default function Teleprompter({ intro, joke, comedian, onStop }) {
           fontStyle: 'italic',
           marginBottom: '2.5rem',
           textAlign: 'center',
-          fontFamily: "'Courier Prime','Courier New',Courier,monospace",
+          fontFamily: "'Joan','Georgia',serif",
           opacity: scrolling ? 0 : 1,
           transition: 'opacity 1.5s ease',
         }}
@@ -67,7 +67,7 @@ export default function Teleprompter({ intro, joke, comedian, onStop }) {
             fontSize: 'clamp(1.5rem, 3.5vw, 2.4rem)',
             lineHeight: 1.5,
             fontWeight: 700,
-            fontFamily: "'Courier Prime','Courier New',Courier,monospace",
+            fontFamily: "'Joan','Georgia',serif",
             marginBottom: '1.5rem',
             textShadow: '0 2px 20px rgba(0,0,0,0.8)',
           }}
@@ -81,7 +81,7 @@ export default function Teleprompter({ intro, joke, comedian, onStop }) {
             fontSize: 'clamp(0.85rem, 1.8vw, 1.1rem)',
             letterSpacing: '0.15em',
             fontStyle: 'italic',
-            fontFamily: "'Courier Prime','Courier New',Courier,monospace",
+            fontFamily: "'Joan','Georgia',serif",
             opacity: 0.85,
           }}
         >
@@ -105,7 +105,7 @@ export default function Teleprompter({ intro, joke, comedian, onStop }) {
           style={{
             color: '#dc2626', fontSize: '0.6rem',
             letterSpacing: '0.5em', fontWeight: 700, textTransform: 'uppercase',
-            fontFamily: "'Courier Prime','Courier New',Courier,monospace",
+            fontFamily: "'Joan','Georgia',serif",
           }}
         >
           REC
@@ -142,7 +142,7 @@ export default function Teleprompter({ intro, joke, comedian, onStop }) {
           fontSize: '0.75rem', fontWeight: 700,
           letterSpacing: '0.38em', textTransform: 'uppercase',
           cursor: 'pointer',
-          fontFamily: "'Courier Prime','Courier New',Courier,monospace",
+          fontFamily: "'Joan','Georgia',serif",
           transition: 'background 0.15s',
         }}
       >
