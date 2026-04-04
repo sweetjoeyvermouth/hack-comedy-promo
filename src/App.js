@@ -411,7 +411,7 @@ export default function App() {
             </header>
 
             {/* ── TELL A JOKE title — floats between header and mic ── */}
-            {(phase === 'idle' || (phase === 'listening' && jokeType === 'tell')) && (
+            {phase === 'idle' && (
               <div style={{
                 position: 'absolute',
                 top: isMobile ? '18%' : '22%',
@@ -463,27 +463,49 @@ export default function App() {
               </div>
             )}
 
-            {/* ── TELL LISTENING: only "Say my own joke" stays, REC badge ── */}
+            {/* ── TELL LISTENING: full-screen overlay like teleprompter ── */}
             {phase === 'listening' && jokeType === 'tell' && (
-              <>
+              <div className="fade-up" style={{
+                position: 'fixed', inset: 0,
+                display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center',
+                background: 'rgba(0,0,0,0.62)',
+                backdropFilter: 'blur(2px)',
+                zIndex: 30,
+                padding: '6rem 2rem 5rem',
+              }}>
+                {/* REC indicator */}
                 <div style={{
-                  position: 'absolute',
-                  top: '57%',
-                  left: '50%',
-                  transform: 'translate(calc(-50% - clamp(80px, 12vw, 160px)), -50%)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: 10,
+                  position: 'absolute', top: 32, left: '50%',
+                  transform: 'translateX(-50%)',
+                  display: 'flex', alignItems: 'center', gap: 8,
                 }}>
-                  <BoxButton disabled style={{ opacity: 0.55, cursor: 'default' }}>
-                    Say my own joke
-                  </BoxButton>
-                  <RecBadge />
+                  <div className="rec-dot" style={{ width: 9, height: 9, borderRadius: '50%', background: '#dc2626', flexShrink: 0 }} />
+                  <span style={{
+                    color: '#dc2626', fontSize: '0.6rem',
+                    letterSpacing: '0.5em', fontWeight: 700, textTransform: 'uppercase',
+                    fontFamily: JOAN,
+                  }}>REC</span>
                 </div>
 
+                {/* Waveform */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                  {Array.from({ length: 12 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="waveform-bar"
+                      style={{
+                        background: i % 3 === 0 ? '#dc2626' : 'rgba(220,38,38,0.55)',
+                        animationDelay: `${(i * 0.08) % 0.65}s`,
+                        animationDuration: `${0.38 + (i % 5) * 0.09}s`,
+                      }}
+                    />
+                  ))}
+                </div>
+
+                {/* Done button */}
                 <DoneButton onClick={stopRecording} />
-              </>
+              </div>
             )}
 
             {/* ── STEAL LISTENING: Teleprompter ── */}

@@ -37,32 +37,6 @@ export default function CritiqueDisplay({ text, jokeType, onWatchFilm, onTryAgai
 
   return (
     <div className="fade-up">
-      {/* Label */}
-      <p style={{
-        color: accentColor,
-        fontSize: 'clamp(0.75rem, 1.2vw, 1rem)',
-        letterSpacing: '0.38em',
-        textTransform: 'uppercase',
-        opacity: 0.7,
-        fontFamily: JOAN,
-        marginBottom: '0.75rem',
-      }}>
-        {isSteal ? '— Judge\'s Notes —' : '— Audience Review —'}
-      </p>
-
-      {/* Quote mark */}
-      <span style={{
-        display: 'block',
-        color: accentColor,
-        fontSize: 'clamp(3rem, 5vw, 5rem)',
-        opacity: 0.2,
-        lineHeight: 1,
-        marginBottom: '0.25rem',
-        fontFamily: JOAN,
-      }}>
-        "
-      </span>
-
       {/* Typewriter text */}
       <div style={{
         borderLeft: `3px solid ${accentColor}`,
