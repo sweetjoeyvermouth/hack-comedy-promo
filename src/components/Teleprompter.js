@@ -6,7 +6,7 @@ function scrollDuration(text) {
   return Math.max(15, Math.round((words / 10) * 3) * 2);
 }
 
-export default function Teleprompter({ intro, joke, comedian, onStop }) {
+export default function Teleprompter({ joke, comedian, onStop }) {
   const [scrolling, setScrolling] = useState(false);
   const [hov, setHov] = useState(false);
   const duration = scrollDuration(joke);
@@ -34,23 +34,6 @@ export default function Teleprompter({ intro, joke, comedian, onStop }) {
         overflow: 'hidden',
       }}
     >
-      {/* Intro phrase */}
-      <p
-        style={{
-          color: 'rgba(201,150,58,0.75)',
-          fontSize: 'clamp(0.7rem, 1.5vw, 0.9rem)',
-          letterSpacing: '0.2em',
-          fontStyle: 'italic',
-          marginBottom: '2.5rem',
-          textAlign: 'center',
-          fontFamily: "'Joan','Georgia',serif",
-          opacity: scrolling ? 0 : 1,
-          transition: 'opacity 1.5s ease',
-        }}
-      >
-        {intro}
-      </p>
-
       {/* Joke + comedian — the scrolling block */}
       <div
         style={{
