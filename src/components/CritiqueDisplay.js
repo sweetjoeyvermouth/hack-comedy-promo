@@ -3,9 +3,10 @@ import React, { useState, useEffect } from 'react';
 const CHAR_DELAY_MS = 32;
 
 export default function CritiqueDisplay({ text, jokeType, onWatchFilm, onTryAgain }) {
-  const [displayed, setDisplayed]   = useState('');
-  const [complete, setComplete]     = useState(false);
+  const [displayed, setDisplayed] = useState('');
+  const [complete, setComplete]   = useState(false);
   const [filmHovered, setFilmHovered] = useState(false);
+  // filmHovered used on the just-play-the-video button
 
   const isSteal = jokeType === 'steal';
   const accentColor = isSteal ? '#c9963a' : '#dc2626';
@@ -78,30 +79,25 @@ export default function CritiqueDisplay({ text, jokeType, onWatchFilm, onTryAgai
       {/* Actions — appear once typewriter finishes */}
       {complete && (
         <div className="fade-up flex flex-col gap-3">
-          {/* Watch the Film */}
+          {/* Just play the video — asset button */}
           <button
             onClick={onWatchFilm}
             onMouseEnter={() => setFilmHovered(true)}
             onMouseLeave={() => setFilmHovered(false)}
             style={{
-              width: '100%',
-              border: `2px solid ${isSteal ? '#c9963a' : '#f0ebe0'}`,
-              background: isSteal
-                ? filmHovered ? '#f5c842' : '#c9963a'
-                : filmHovered ? 'rgba(240,235,224,0.9)' : '#f0ebe0',
-              color: '#080808',
-              padding: '1rem 2rem',
-              fontSize: '0.92rem',
-              fontWeight: 700,
-              letterSpacing: '0.22em',
-              textTransform: 'uppercase',
+              background: 'none',
+              border: 'none',
               cursor: 'pointer',
-              fontFamily: "'Courier Prime', 'Courier New', Courier, monospace",
-              transform: filmHovered ? 'scale(1.02)' : 'scale(1)',
-              transition: 'all 0.14s ease',
+              padding: '0.75rem 0',
+              display: 'flex',
+              justifyContent: 'center',
+              opacity: filmHovered ? 1 : 0.85,
+              transform: filmHovered ? 'scale(1.04)' : 'scale(1)',
+              transition: 'all 0.15s ease',
+              filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.5))',
             }}
           >
-            Watch the Film →
+            <img src="/assets/just-play-the-video.png" alt="Just play the video" style={{ height: 22, width: 'auto' }} />
           </button>
 
           {/* Try again */}

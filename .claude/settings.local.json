@@ -5,7 +5,13 @@
       "Bash(cp \"/Users/joey/Documents/Claude/Projects/PROJECT 5/assets/background.jpg\" \"/Users/joey/Documents/Claude/Projects/PROJECT 5/public/assets/background.jpg\")",
       "Bash(mkdir -p \"/Users/joey/Documents/Claude/Projects/PROJECT 5/src/components\")",
       "Bash(npm install:*)",
-      "Bash(npx react-scripts:*)"
+      "Bash(npx react-scripts:*)",
+      "Bash(unzip -o laughsound.zip -d laughsound_extracted/)",
+      "Bash(cp \"assets/Backgroundupdated.png\" \"public/assets/bg.png\")",
+      "Bash(cp \"assets/3MOK_Logo 1 \\(1\\).png\" \"public/assets/logo.png\")",
+      "Bash(cp \"assets/TELL A JOKE.png\" \"public/assets/tell-a-joke.png\")",
+      "Bash(cp \"assets/Say my own joke \\(1\\).png\" \"public/assets/say-my-own-joke.png\")",
+      "Bash(cp \"assets/Steal a joke \\(1\\).png\" \"public/assets/steal-a-joke.png\")"
     ]
   }
 }
