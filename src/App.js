@@ -174,13 +174,21 @@ export default function App() {
   const crowdStarted    = useRef(false);
   const crowdFadeRef    = useRef(null);
 
-  // Start crowd noise on first user interaction (browsers block autoplay before gesture)
   const startCrowd = useCallback(() => {
     if (crowdStarted.current || !crowdRef.current) return;
     crowdStarted.current = true;
     crowdRef.current.volume = 0.18;
     crowdRef.current.play().catch(() => {});
   }, []);
+
+  // Try autoplay on mount; fall back to first click anywhere
+  useEffect(() => {
+    const tryNow = () => startCrowd();
+    tryNow();
+    const onFirstClick = () => { startCrowd(); document.removeEventListener('click', onFirstClick); };
+    document.addEventListener('click', onFirstClick);
+    return () => document.removeEventListener('click', onFirstClick);
+  }, [startCrowd]);
 
   // Fade crowd out over ~2.5s then pause
   const fadeCrowd = useCallback(() => {
@@ -276,14 +284,12 @@ export default function App() {
   }, [cleanup, stopRecording]);
 
   const handleTellJoke = () => {
-    startCrowd();
     jokeTypeRef.current = 'tell';
     setJokeType('tell');
     startListening();
   };
 
   const handleStealJoke = () => {
-    startCrowd();
     jokeTypeRef.current = 'steal';
     setJokeType('steal');
     setStolenJoke(pick(STOLEN_JOKES));
@@ -375,7 +381,7 @@ export default function App() {
 
               {/* Just play the video */}
               <div style={{ flexShrink: 0, paddingTop: isMobile ? 2 : 'clamp(4px, 0.8vh, 14px)' }}>
-                <BoxButton small onClick={() => { startCrowd(); setPhase('film'); }}>
+                <BoxButton small onClick={() => setPhase('film')}>
                   Just play the video
                 </BoxButton>
               </div>
