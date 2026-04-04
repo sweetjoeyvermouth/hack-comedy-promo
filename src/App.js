@@ -97,6 +97,15 @@ export default function App() {
   const [stealIntro, setStealIntro] = useState('');
   const [critique, setCritique]     = useState('');
   const [micError, setMicError]     = useState('');
+  const [winW, setWinW]             = useState(() => window.innerWidth);
+
+  useEffect(() => {
+    const h = () => setWinW(window.innerWidth);
+    window.addEventListener('resize', h);
+    return () => window.removeEventListener('resize', h);
+  }, []);
+
+  const isMobile = winW < 640;
 
   const jokeTypeRef   = useRef(null);
   const streamRef     = useRef(null);
@@ -232,87 +241,141 @@ export default function App() {
           {/* UI layer */}
           <div className="relative z-10" style={{ minHeight: '100dvh' }}>
 
-            {/* ── Header — flex row so elements can never overlap ── */}
-            {/* Left / Center / Right compress against each other before intersecting */}
+            {/* ── Header ── */}
             <header style={{
               position: 'absolute',
               top: 0, left: 0, right: 0,
-              display: 'flex',
-              alignItems: 'flex-start',
-              justifyContent: 'space-between',
-              padding: 'clamp(10px, 2vh, 32px) clamp(14px, 2.5vw, 40px)',
-              gap: 'clamp(6px, 1.5vw, 20px)',
               zIndex: 10,
+              padding: isMobile
+                ? 'clamp(8px, 1.5vh, 20px) clamp(12px, 3vw, 24px)'
+                : 'clamp(10px, 2vh, 32px) clamp(14px, 2.5vw, 40px)',
             }}>
-              {/* Logo — left */}
-              <div style={{ flexShrink: 0 }}>
-                <img
-                  src="/assets/logo.png"
-                  alt="3 Months of Killing"
-                  style={{
-                    height: 'clamp(44px, 12vh, 160px)',
-                    width: 'auto',
-                    display: 'block',
-                    filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.7))',
-                  }}
-                />
-                <p style={{
-                  color: 'rgba(240,235,224,0.6)',
-                  fontSize: 'clamp(0.45rem, 0.85vw, 1rem)',
-                  letterSpacing: '0.22em',
-                  textTransform: 'uppercase',
-                  marginTop: 'clamp(2px, 0.4vh, 8px)',
-                  fontFamily: JOAN,
-                  textShadow: '0 1px 4px rgba(0,0,0,0.8)',
-                  whiteSpace: 'nowrap',
+              {isMobile ? (
+                /* ── Mobile: top bar (logo left, button right), title below ── */
+                <>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                    <div style={{ flexShrink: 0 }}>
+                      <img
+                        src="/assets/logo.png"
+                        alt="3 Months of Killing"
+                        style={{
+                          height: 'clamp(36px, 10vw, 60px)',
+                          width: 'auto',
+                          display: 'block',
+                          filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.7))',
+                        }}
+                      />
+                    </div>
+                    <div style={{ paddingTop: 2 }}>
+                      <BoxButton small onClick={() => setPhase('film')}>
+                        Just play the video
+                      </BoxButton>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'center', marginTop: 'clamp(6px, 1.5vw, 14px)' }}>
+                    <h1 style={{
+                      color: '#f0ebe0',
+                      fontSize: 'clamp(1.4rem, 6vw, 3rem)',
+                      fontFamily: JOAN,
+                      fontWeight: 400,
+                      letterSpacing: '0.12em',
+                      margin: 0,
+                      textShadow: '0 2px 20px rgba(0,0,0,0.8)',
+                    }}>
+                      TELL A JOKE
+                    </h1>
+                    {phase === 'listening' && jokeType === 'tell' && (
+                      <p className="fade-up" style={{
+                        color: 'rgba(240,235,224,0.78)',
+                        fontSize: 'clamp(0.8rem, 3.5vw, 1.2rem)',
+                        fontFamily: JOAN,
+                        letterSpacing: '0.08em',
+                        marginTop: 4,
+                        textShadow: '0 1px 10px rgba(0,0,0,0.9)',
+                      }}>
+                        The audience is listening
+                      </p>
+                    )}
+                  </div>
+                </>
+              ) : (
+                /* ── Desktop: single flex row (logo | title | button) ── */
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  justifyContent: 'space-between',
+                  gap: 'clamp(6px, 1.5vw, 20px)',
                 }}>
-                  Written by Jon Ryan Sugimoto
-                </p>
-              </div>
+                  {/* Logo — left */}
+                  <div style={{ flexShrink: 0 }}>
+                    <img
+                      src="/assets/logo.png"
+                      alt="3 Months of Killing"
+                      style={{
+                        height: 'clamp(44px, 12vh, 160px)',
+                        width: 'auto',
+                        display: 'block',
+                        filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.7))',
+                      }}
+                    />
+                    <p style={{
+                      color: 'rgba(240,235,224,0.6)',
+                      fontSize: 'clamp(0.45rem, 0.85vw, 1rem)',
+                      letterSpacing: '0.22em',
+                      textTransform: 'uppercase',
+                      marginTop: 'clamp(2px, 0.4vh, 8px)',
+                      fontFamily: JOAN,
+                      textShadow: '0 1px 4px rgba(0,0,0,0.8)',
+                      whiteSpace: 'nowrap',
+                    }}>
+                      Written by Jon Ryan Sugimoto
+                    </p>
+                  </div>
 
-              {/* TELL A JOKE — center, shrinks before it ever touches neighbours */}
-              <div style={{
-                flex: 1,
-                textAlign: 'center',
-                minWidth: 0,
-                paddingTop: 'clamp(4px, 0.8vh, 14px)',
-              }}>
-                <h1 style={{
-                  color: '#f0ebe0',
-                  fontSize: 'clamp(1.2rem, 4.4vw, 7rem)',
-                  fontFamily: JOAN,
-                  fontWeight: 400,
-                  letterSpacing: '0.12em',
-                  margin: 0,
-                  textShadow: '0 2px 20px rgba(0,0,0,0.8)',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                }}>
-                  TELL A JOKE
-                </h1>
-
-                {phase === 'listening' && jokeType === 'tell' && (
-                  <p className="fade-up" style={{
-                    color: 'rgba(240,235,224,0.78)',
-                    fontSize: 'clamp(0.75rem, 1.7vw, 2rem)',
-                    fontFamily: JOAN,
-                    letterSpacing: '0.08em',
-                    marginTop: 'clamp(3px, 0.4vh, 8px)',
-                    textShadow: '0 1px 10px rgba(0,0,0,0.9)',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
+                  {/* TELL A JOKE — center */}
+                  <div style={{
+                    flex: 1,
+                    textAlign: 'center',
+                    minWidth: 0,
+                    paddingTop: 'clamp(4px, 0.8vh, 14px)',
                   }}>
-                    The audience is listening
-                  </p>
-                )}
-              </div>
+                    <h1 style={{
+                      color: '#f0ebe0',
+                      fontSize: 'clamp(1.2rem, 4.4vw, 7rem)',
+                      fontFamily: JOAN,
+                      fontWeight: 400,
+                      letterSpacing: '0.12em',
+                      margin: 0,
+                      textShadow: '0 2px 20px rgba(0,0,0,0.8)',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                    }}>
+                      TELL A JOKE
+                    </h1>
+                    {phase === 'listening' && jokeType === 'tell' && (
+                      <p className="fade-up" style={{
+                        color: 'rgba(240,235,224,0.78)',
+                        fontSize: 'clamp(0.75rem, 1.7vw, 2rem)',
+                        fontFamily: JOAN,
+                        letterSpacing: '0.08em',
+                        marginTop: 'clamp(3px, 0.4vh, 8px)',
+                        textShadow: '0 1px 10px rgba(0,0,0,0.9)',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                      }}>
+                        The audience is listening
+                      </p>
+                    )}
+                  </div>
 
-              {/* Just play the video — right */}
-              <div style={{ flexShrink: 0, paddingTop: 'clamp(4px, 0.8vh, 14px)' }}>
-                <BoxButton small onClick={() => setPhase('film')}>
-                  Just play the video
-                </BoxButton>
-              </div>
+                  {/* Just play the video — right */}
+                  <div style={{ flexShrink: 0, paddingTop: 'clamp(4px, 0.8vh, 14px)' }}>
+                    <BoxButton small onClick={() => setPhase('film')}>
+                      Just play the video
+                    </BoxButton>
+                  </div>
+                </div>
+              )}
             </header>
 
             {/* ── IDLE: Both buttons flanking the mic ── */}
@@ -324,7 +387,7 @@ export default function App() {
                 transform: 'translate(-50%, -50%)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 'clamp(48px, 13vw, 320px)',
+                gap: 'clamp(120px, 32vw, 640px)',
               }}>
                 <BoxButton onClick={handleTellJoke}>Say my own joke</BoxButton>
                 <BoxButton onClick={handleStealJoke}>Steal a joke</BoxButton>
@@ -364,14 +427,14 @@ export default function App() {
               />
             )}
 
-            {/* ── CRITIQUE — left of the mic ── */}
+            {/* ── CRITIQUE — centered ── */}
             {phase === 'critique' && (
               <div className="fade-up" style={{
                 position: 'absolute',
-                left: '3vw',
                 top: '50%',
-                transform: 'translateY(-50%)',
-                width: 'clamp(260px, 40vw, 580px)',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 'clamp(260px, 55vw, 680px)',
                 padding: 'clamp(1rem, 2vh, 2rem) clamp(1rem, 2vw, 2.5rem)',
                 background: 'rgba(0,0,0,0.5)',
                 backdropFilter: 'blur(10px)',
