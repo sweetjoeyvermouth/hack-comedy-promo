@@ -176,21 +176,41 @@ export default function App() {
 
   const startCrowd = useCallback(() => {
     if (crowdStarted.current || !crowdRef.current) return;
-    crowdRef.current.volume = 0.45;
-    const p = crowdRef.current.play();
+    crowdStarted.current = true;
+    const audio = crowdRef.current;
+    audio.volume = 0;
+    const p = audio.play();
     if (p) {
-      crowdStarted.current = true;
-      p.catch(() => { crowdStarted.current = false; }); // reset so click fallback can retry
+      p.catch(() => { crowdStarted.current = false; return; });
+      // Fade in to target volume over ~3s
+      const target = 0.45;
+      const step = target / 60; // 60 steps × 50ms = 3s
+      const fade = setInterval(() => {
+        if (audio.volume + step < target) {
+          audio.volume = Math.min(target, audio.volume + step);
+        } else {
+          audio.volume = target;
+          clearInterval(fade);
+        }
+      }, 50);
+    } else {
+      crowdStarted.current = false;
     }
   }, []);
 
-  // Try autoplay on mount; fall back to first click anywhere
+  // Start on first mousemove (desktop) or touchstart (mobile)
   useEffect(() => {
-    const tryNow = () => startCrowd();
-    tryNow();
-    const onFirstClick = () => { startCrowd(); document.removeEventListener('click', onFirstClick); };
-    document.addEventListener('click', onFirstClick);
-    return () => document.removeEventListener('click', onFirstClick);
+    const onGesture = () => {
+      startCrowd();
+      document.removeEventListener('mousemove', onGesture);
+      document.removeEventListener('touchstart', onGesture);
+    };
+    document.addEventListener('mousemove', onGesture);
+    document.addEventListener('touchstart', onGesture);
+    return () => {
+      document.removeEventListener('mousemove', onGesture);
+      document.removeEventListener('touchstart', onGesture);
+    };
   }, [startCrowd]);
 
   // Fade crowd out over ~2.5s then pause
