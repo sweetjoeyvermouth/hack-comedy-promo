@@ -173,6 +173,7 @@ export default function App() {
   const crowdRef        = useRef(null);
   const crowdStarted    = useRef(false);
   const crowdFadeRef    = useRef(null);
+  const bgVideoRef      = useRef(null);
 
   const startCrowd = useCallback(() => {
     if (crowdStarted.current || !crowdRef.current) return;
@@ -243,6 +244,10 @@ export default function App() {
       laughRef.current.currentTime = 0;
       const p = laughRef.current.play();
       if (p) p.catch(() => {});
+    }
+    // Play background video — holds on last frame when it ends (no loop)
+    if (bgVideoRef.current) {
+      bgVideoRef.current.play().catch(() => {});
     }
     // Bridge: transition while laugh is still playing
     setTimeout(() => {
@@ -350,10 +355,19 @@ export default function App() {
         <FilmEmbed vimeoId={VIMEO_ID} onBack={handleReset} />
       ) : (
         <>
-          {/* Background */}
-          <div
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: "url('/assets/bg.png')" }}
+          {/* Background video — paused on first frame, plays on laugh track */}
+          <video
+            ref={bgVideoRef}
+            src="/assets/backgroundvideo.mp4"
+            poster="/assets/bg.png"
+            muted
+            playsInline
+            preload="auto"
+            style={{
+              position: 'absolute', inset: 0,
+              width: '100%', height: '100%',
+              objectFit: 'cover',
+            }}
           />
           <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.35)' }} />
           <div className="grain-overlay" />
