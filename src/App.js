@@ -479,7 +479,7 @@ export default function App() {
 
             {/* ── TELL LISTENING: full-screen overlay like teleprompter ── */}
             {phase === 'listening' && jokeType === 'tell' && (
-              <div className="fade-up" style={{
+              <div style={{
                 position: 'fixed', inset: 0,
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
@@ -534,7 +534,7 @@ export default function App() {
 
             {/* ── CRITIQUE — full-screen overlay, centered ── */}
             {phase === 'critique' && (
-              <div className="fade-up" style={{
+              <div style={{
                 position: 'fixed',
                 inset: 0,
                 display: 'flex',
