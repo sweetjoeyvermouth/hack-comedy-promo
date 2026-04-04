@@ -232,77 +232,90 @@ export default function App() {
           {/* UI layer */}
           <div className="relative z-10" style={{ minHeight: '100dvh' }}>
 
-            {/* ── Logo — top left ── */}
-            <div style={{ position: 'absolute', top: 24, left: 32 }}>
-              <img
-                src="/assets/logo.png"
-                alt="3 Months of Killing"
-                style={{
-                  height: 'clamp(90px, 13vw, 145px)',
-                  width: 'auto',
-                  display: 'block',
-                  filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.7))',
-                }}
-              />
-              <p style={{
-                color: 'rgba(240,235,224,0.6)',
-                fontSize: 'clamp(0.6rem, 1vw, 0.85rem)',
-                letterSpacing: '0.25em',
-                textTransform: 'uppercase',
-                marginTop: '0.4rem',
-                fontFamily: JOAN,
-                textShadow: '0 1px 4px rgba(0,0,0,0.8)',
-              }}>
-                Written by Jon Ryan Sugimoto
-              </p>
-            </div>
-
-            {/* ── Just play the video — top right ── */}
-            <BoxButton
-              onClick={() => setPhase('film')}
-              style={{ position: 'absolute', top: 28, right: 32 }}
-              small
-            >
-              Just play the video
-            </BoxButton>
-
-            {/* ── TELL A JOKE header — top center ── */}
-            <div style={{
+            {/* ── Header — flex row so elements can never overlap ── */}
+            {/* Left / Center / Right compress against each other before intersecting */}
+            <header style={{
               position: 'absolute',
-              top: 'clamp(28px, 5vh, 48px)',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              textAlign: 'center',
-              whiteSpace: 'nowrap',
+              top: 0, left: 0, right: 0,
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+              padding: 'clamp(10px, 2vh, 32px) clamp(14px, 2.5vw, 40px)',
+              gap: 'clamp(6px, 1.5vw, 20px)',
+              zIndex: 10,
             }}>
-              <h1 style={{
-                color: '#f0ebe0',
-                fontSize: 'clamp(2.8rem, 6.5vw, 5.5rem)',
-                fontFamily: JOAN,
-                fontWeight: 400,
-                letterSpacing: '0.12em',
-                margin: 0,
-                textShadow: '0 2px 20px rgba(0,0,0,0.8)',
-              }}>
-                TELL A JOKE
-              </h1>
-
-              {/* "The audience is listening" */}
-              {phase === 'listening' && jokeType === 'tell' && (
-                <p className="fade-up" style={{
-                  color: 'rgba(240,235,224,0.78)',
-                  fontSize: 'clamp(1.1rem, 2.2vw, 1.6rem)',
+              {/* Logo — left */}
+              <div style={{ flexShrink: 0 }}>
+                <img
+                  src="/assets/logo.png"
+                  alt="3 Months of Killing"
+                  style={{
+                    height: 'clamp(44px, 12vh, 160px)',
+                    width: 'auto',
+                    display: 'block',
+                    filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.7))',
+                  }}
+                />
+                <p style={{
+                  color: 'rgba(240,235,224,0.6)',
+                  fontSize: 'clamp(0.45rem, 0.85vw, 1rem)',
+                  letterSpacing: '0.22em',
+                  textTransform: 'uppercase',
+                  marginTop: 'clamp(2px, 0.4vh, 8px)',
                   fontFamily: JOAN,
-                  letterSpacing: '0.08em',
-                  marginTop: '0.5rem',
-                  textShadow: '0 1px 10px rgba(0,0,0,0.9)',
+                  textShadow: '0 1px 4px rgba(0,0,0,0.8)',
+                  whiteSpace: 'nowrap',
                 }}>
-                  The audience is listening
+                  Written by Jon Ryan Sugimoto
                 </p>
-              )}
-            </div>
+              </div>
 
-            {/* ── IDLE: Both buttons ── */}
+              {/* TELL A JOKE — center, shrinks before it ever touches neighbours */}
+              <div style={{
+                flex: 1,
+                textAlign: 'center',
+                minWidth: 0,
+                paddingTop: 'clamp(4px, 0.8vh, 14px)',
+              }}>
+                <h1 style={{
+                  color: '#f0ebe0',
+                  fontSize: 'clamp(1.2rem, 4.4vw, 7rem)',
+                  fontFamily: JOAN,
+                  fontWeight: 400,
+                  letterSpacing: '0.12em',
+                  margin: 0,
+                  textShadow: '0 2px 20px rgba(0,0,0,0.8)',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                }}>
+                  TELL A JOKE
+                </h1>
+
+                {phase === 'listening' && jokeType === 'tell' && (
+                  <p className="fade-up" style={{
+                    color: 'rgba(240,235,224,0.78)',
+                    fontSize: 'clamp(0.75rem, 1.7vw, 2rem)',
+                    fontFamily: JOAN,
+                    letterSpacing: '0.08em',
+                    marginTop: 'clamp(3px, 0.4vh, 8px)',
+                    textShadow: '0 1px 10px rgba(0,0,0,0.9)',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                  }}>
+                    The audience is listening
+                  </p>
+                )}
+              </div>
+
+              {/* Just play the video — right */}
+              <div style={{ flexShrink: 0, paddingTop: 'clamp(4px, 0.8vh, 14px)' }}>
+                <BoxButton small onClick={() => setPhase('film')}>
+                  Just play the video
+                </BoxButton>
+              </div>
+            </header>
+
+            {/* ── IDLE: Both buttons flanking the mic ── */}
             {phase === 'idle' && (
               <div style={{
                 position: 'absolute',
@@ -311,7 +324,7 @@ export default function App() {
                 transform: 'translate(-50%, -50%)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 'clamp(100px, 16vw, 220px)',
+                gap: 'clamp(48px, 13vw, 320px)',
               }}>
                 <BoxButton onClick={handleTellJoke}>Say my own joke</BoxButton>
                 <BoxButton onClick={handleStealJoke}>Steal a joke</BoxButton>
@@ -355,13 +368,13 @@ export default function App() {
             {phase === 'critique' && (
               <div className="fade-up" style={{
                 position: 'absolute',
-                left: '4%',
+                left: '3vw',
                 top: '50%',
                 transform: 'translateY(-50%)',
-                width: 'min(42%, 540px)',
-                padding: '1.5rem 2rem',
-                background: 'rgba(0,0,0,0.45)',
-                backdropFilter: 'blur(8px)',
+                width: 'clamp(260px, 40vw, 580px)',
+                padding: 'clamp(1rem, 2vh, 2rem) clamp(1rem, 2vw, 2.5rem)',
+                background: 'rgba(0,0,0,0.5)',
+                backdropFilter: 'blur(10px)',
               }}>
                 <CritiqueDisplay
                   text={critique}
@@ -414,10 +427,12 @@ function BoxButton({ onClick, children, small, disabled, style = {} }) {
         border: `1px solid ${hov ? 'rgba(240,228,200,0.65)' : 'rgba(240,228,200,0.38)'}`,
         color: '#f0ebe0',
         fontFamily: JOAN,
-        fontSize: small ? 'clamp(0.85rem, 1.4vw, 1.1rem)' : 'clamp(1.4rem, 2.8vw, 2.1rem)',
+        fontSize: small ? 'clamp(0.6rem, 1.2vw, 1.6rem)' : 'clamp(0.85rem, 2.3vw, 3.2rem)',
         letterSpacing: small ? '0.06em' : '0.04em',
         fontWeight: 400,
-        padding: small ? '0.5rem 1.1rem' : '0.85rem 2.2rem',
+        padding: small
+          ? 'clamp(0.3rem, 0.6vh, 0.8rem) clamp(0.5rem, 1vw, 1.4rem)'
+          : 'clamp(0.5rem, 1vh, 1.2rem) clamp(0.8rem, 2vw, 2.8rem)',
         cursor: disabled ? 'default' : 'pointer',
         backdropFilter: 'blur(6px)',
         transition: 'background 0.15s, border-color 0.15s, transform 0.15s',
@@ -462,7 +477,7 @@ function DoneButton({ onClick }) {
         background: hov ? 'rgba(220,38,38,0.22)' : 'rgba(0,0,0,0.5)',
         color: '#ef4444',
         padding: '0.7rem 2.4rem',
-        fontSize: 'clamp(1rem, 1.8vw, 1.3rem)',
+        fontSize: 'clamp(0.8rem, 1.6vw, 2rem)',
         fontFamily: JOAN,
         letterSpacing: '0.15em',
         cursor: 'pointer',
