@@ -70,18 +70,75 @@ const STEAL_INTROS = [
 ];
 
 const STOLEN_JOKES = [
+  // Mitch Hedberg
   { text: "An escalator can never break: it can only become stairs.", comedian: "Mitch Hedberg" },
   { text: "I'm against picketing, but I don't know how to show it.", comedian: "Mitch Hedberg" },
   { text: "I haven't slept for ten days, because that would be too long.", comedian: "Mitch Hedberg" },
   { text: "I used to do drugs. I still do, but I used to, too.", comedian: "Mitch Hedberg" },
   { text: "I'm sick of following my dreams. I'm just going to ask where they're going and hook up with them later.", comedian: "Mitch Hedberg" },
+  { text: "I don't have a girlfriend. But I do know a woman who'd be mad at me for saying that.", comedian: "Mitch Hedberg" },
+  { text: "I like rice. Rice is great if you're hungry and want 2,000 of something.", comedian: "Mitch Hedberg" },
+  { text: "My fake plants died because I did not pretend to water them.", comedian: "Mitch Hedberg" },
+  { text: "A severed foot is the ultimate stocking stuffer.", comedian: "Mitch Hedberg" },
+  { text: "I went to a restaurant that serves 'breakfast at any time.' So I ordered French toast during the Renaissance.", comedian: "Mitch Hedberg" },
+  { text: "I don't own a cell phone or a pager. I just hang around everyone I know, all the time.", comedian: "Mitch Hedberg" },
+  { text: "I bought a doughnut and they gave me a receipt for the doughnut. I don't need a receipt for the doughnut. I'll just give you money and you give me the doughnut, end of transaction.", comedian: "Mitch Hedberg" },
+  { text: "Wearing a turtleneck is like being strangled by a really weak guy. All day.", comedian: "Mitch Hedberg" },
+  { text: "I remixed a remix, it was back to normal.", comedian: "Mitch Hedberg" },
+  { text: "I'm a heroin addict. I need to do heroin before I get out of bed in the morning... Just kidding.", comedian: "Mitch Hedberg" },
+  // Jerry Seinfeld
   { text: "There is no such thing as fun for the whole family.", comedian: "Jerry Seinfeld" },
   { text: "Men want the same thing from their underwear that they want from women: a little bit of support, and a little bit of freedom.", comedian: "Jerry Seinfeld" },
+  { text: "According to most studies, people's number one fear is public speaking. Number two is death. This means to the average person, if you go to a funeral, you're better off in the casket than doing the eulogy.", comedian: "Jerry Seinfeld" },
+  { text: "I was the best man at a wedding once. If I'm the best man, why is she marrying him?", comedian: "Jerry Seinfeld" },
+  { text: "Dogs are the leaders of the planet. If you see two life forms, one of them's making a poop, the other one's carrying it for him, who would you assume is in charge?", comedian: "Jerry Seinfeld" },
+  { text: "It's amazing that the amount of news that happens in the world every day always just exactly fits the newspaper.", comedian: "Jerry Seinfeld" },
+  { text: "The big advantage of a book is it's very easy to rewind. Close it and you're right back at the beginning.", comedian: "Jerry Seinfeld" },
+  // Steven Wright
   { text: "If at first you don't succeed, skydiving is not for you.", comedian: "Steven Wright" },
   { text: "I put instant coffee in a microwave oven and almost went back in time.", comedian: "Steven Wright" },
   { text: "I have an existential map. It has 'You are here' written all over it.", comedian: "Steven Wright" },
+  { text: "Yesterday I told a chicken to cross the road. It said, 'What for?'", comedian: "Steven Wright" },
+  { text: "I got a new shadow. I had to get rid of the other one — it wasn't doing what I was doing.", comedian: "Steven Wright" },
+  { text: "Last night I stayed up late playing poker with Tarot cards. I got a full house and four people died.", comedian: "Steven Wright" },
+  { text: "I couldn't fix your brakes, so I made your horn louder.", comedian: "Steven Wright" },
+  { text: "I xeroxed a mirror. Now I have an extra Xerox machine.", comedian: "Steven Wright" },
+  { text: "I used to work in a fire hydrant factory. You couldn't park anywhere near the place.", comedian: "Steven Wright" },
+  { text: "I went to a general store. They wouldn't let me buy anything specific.", comedian: "Steven Wright" },
+  { text: "Everywhere is within walking distance if you have the time.", comedian: "Steven Wright" },
+  { text: "I was reading the dictionary. I thought it was a poem about everything.", comedian: "Steven Wright" },
+  // Rodney Dangerfield
   { text: "My wife and I were happy for twenty years. Then we met.", comedian: "Rodney Dangerfield" },
   { text: "I could tell my parents hated me. My bath toys were a toaster and a radio.", comedian: "Rodney Dangerfield" },
+  { text: "I told my psychiatrist that everyone hates me. He said I was being ridiculous — everyone hasn't met me yet.", comedian: "Rodney Dangerfield" },
+  { text: "I drink too much. The last time I gave a urine sample it had an olive in it.", comedian: "Rodney Dangerfield" },
+  { text: "My wife has to be the worst cook. In my house, we pray after we eat.", comedian: "Rodney Dangerfield" },
+  { text: "Last week I told my psychiatrist, 'I keep thinking about suicide.' He told me from now on I have to pay in advance.", comedian: "Rodney Dangerfield" },
+  { text: "I get no respect. The way my luck is running, if I was a politician I would be honest.", comedian: "Rodney Dangerfield" },
+  // Norm Macdonald
+  { text: "I asked my doctor how long I had to live. He said, '10.' I said, '10 what?' He said, '9...'", comedian: "Norm Macdonald" },
+  { text: "I've been reading a lot about sociopaths lately. Apparently there are 29 million of them in the United States. When I discovered this, I was delighted.", comedian: "Norm Macdonald" },
+  { text: "You know what they say: you can lead a horse to water, but you can't make him not be a horse.", comedian: "Norm Macdonald" },
+  { text: "A lot of people think moths are ugly but I don't. I think they're beautiful. And I think they're misunderstood.", comedian: "Norm Macdonald" },
+  // George Carlin
+  { text: "Some people see the glass half full. Others see it half empty. I see a glass that's twice as big as it needs to be.", comedian: "George Carlin" },
+  { text: "The reason I talk to myself is because I'm the only one whose answers I accept.", comedian: "George Carlin" },
+  { text: "I have as much authority as the Pope, I just don't have as many people who believe it.", comedian: "George Carlin" },
+  { text: "Think of how stupid the average person is, and realize half of them are stupider than that.", comedian: "George Carlin" },
+  { text: "If you try to fail, and succeed, which have you done?", comedian: "George Carlin" },
+  // Henny Youngman
+  { text: "Take my wife... please.", comedian: "Henny Youngman" },
+  { text: "I told the doctor I broke my leg in two places. He told me to quit going to those places.", comedian: "Henny Youngman" },
+  { text: "I've got all the money I'll ever need, if I die by four o'clock.", comedian: "Henny Youngman" },
+  // Demetri Martin
+  { text: "A drunk driver is very dangerous. So is a drunk backseat driver if he's persuasive.", comedian: "Demetri Martin" },
+  { text: "I asked my doctor, 'Will I be able to play violin after the surgery?' He said yes. I said great, because I couldn't before.", comedian: "Demetri Martin" },
+  { text: "I wrapped my Christmas presents early this year, but I used the wrong paper. It said 'Happy Birthday' on it. I didn't want to waste it so I just wrote 'Jesus' on it.", comedian: "Demetri Martin" },
+  { text: "I was at a flower shop. The sign said 'Say it with flowers.' I brought one rose and said, 'I'm a man of few words.'", comedian: "Demetri Martin" },
+  // Mitch Hedberg (more)
+  { text: "I would imagine if you could understand Morse code, a tap dancer would drive you crazy.", comedian: "Mitch Hedberg" },
+  { text: "I played golf. I did not get a hole in one, but I did hit a guy, and that's way more satisfying.", comedian: "Mitch Hedberg" },
+  { text: "I saw a human pyramid once. It was very unnecessary.", comedian: "Mitch Hedberg" },
 ];
 
 const VIMEO_ID = '76979871';
@@ -107,12 +164,39 @@ export default function App() {
 
   const isMobile = winW < 640;
 
-  const jokeTypeRef   = useRef(null);
-  const streamRef     = useRef(null);
-  const audioCtxRef   = useRef(null);
-  const animFrameRef  = useRef(null);
-  const maxTimeoutRef = useRef(null);
-  const laughRef      = useRef(null);
+  const jokeTypeRef     = useRef(null);
+  const streamRef       = useRef(null);
+  const audioCtxRef     = useRef(null);
+  const animFrameRef    = useRef(null);
+  const maxTimeoutRef   = useRef(null);
+  const laughRef        = useRef(null);
+  const crowdRef        = useRef(null);
+  const crowdStarted    = useRef(false);
+  const crowdFadeRef    = useRef(null);
+
+  // Start crowd noise on first user interaction (browsers block autoplay before gesture)
+  const startCrowd = useCallback(() => {
+    if (crowdStarted.current || !crowdRef.current) return;
+    crowdStarted.current = true;
+    crowdRef.current.volume = 0.18;
+    crowdRef.current.play().catch(() => {});
+  }, []);
+
+  // Fade crowd out over ~2.5s then pause
+  const fadeCrowd = useCallback(() => {
+    if (!crowdRef.current) return;
+    if (crowdFadeRef.current) clearInterval(crowdFadeRef.current);
+    const audio = crowdRef.current;
+    crowdFadeRef.current = setInterval(() => {
+      if (audio.volume > 0.008) {
+        audio.volume = Math.max(0, audio.volume - 0.008);
+      } else {
+        audio.volume = 0;
+        audio.pause();
+        clearInterval(crowdFadeRef.current);
+      }
+    }, 50);
+  }, []);
 
   const cleanup = useCallback(() => {
     if (animFrameRef.current)  { cancelAnimationFrame(animFrameRef.current); animFrameRef.current = null; }
@@ -192,12 +276,14 @@ export default function App() {
   }, [cleanup, stopRecording]);
 
   const handleTellJoke = () => {
+    startCrowd();
     jokeTypeRef.current = 'tell';
     setJokeType('tell');
     startListening();
   };
 
   const handleStealJoke = () => {
+    startCrowd();
     jokeTypeRef.current = 'steal';
     setJokeType('steal');
     setStolenJoke(pick(STOLEN_JOKES));
@@ -219,11 +305,17 @@ export default function App() {
 
   useEffect(() => () => cleanup(), [cleanup]);
 
+  // Fade crowd out when film starts
+  useEffect(() => {
+    if (phase === 'film') fadeCrowd();
+  }, [phase, fadeCrowd]);
+
   // ─── Render ───────────────────────────────────────────────────
   return (
     <div className="relative w-full overflow-hidden bg-black" style={{ minHeight: '100dvh', fontFamily: JOAN }}>
 
       <audio ref={laughRef} src="/assets/laugh.wav" preload="auto" />
+      <audio ref={crowdRef} src="/assets/crowd.wav" preload="auto" loop />
 
       {phase === 'film' ? (
         <FilmEmbed vimeoId={VIMEO_ID} onBack={handleReset} />
@@ -241,142 +333,90 @@ export default function App() {
           {/* UI layer */}
           <div className="relative z-10" style={{ minHeight: '100dvh' }}>
 
-            {/* ── Header ── */}
+            {/* ── Header: logo left, button right — no title here ── */}
             <header style={{
               position: 'absolute',
               top: 0, left: 0, right: 0,
               zIndex: 10,
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
               padding: isMobile
                 ? 'clamp(8px, 1.5vh, 20px) clamp(12px, 3vw, 24px)'
                 : 'clamp(10px, 2vh, 32px) clamp(14px, 2.5vw, 40px)',
             }}>
-              {isMobile ? (
-                /* ── Mobile: top bar (logo left, button right), title below ── */
-                <>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-                    <div style={{ flexShrink: 0 }}>
-                      <img
-                        src="/assets/logo.png"
-                        alt="3 Months of Killing"
-                        style={{
-                          height: 'clamp(36px, 10vw, 60px)',
-                          width: 'auto',
-                          display: 'block',
-                          filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.7))',
-                        }}
-                      />
-                    </div>
-                    <div style={{ paddingTop: 2 }}>
-                      <BoxButton small onClick={() => setPhase('film')}>
-                        Just play the video
-                      </BoxButton>
-                    </div>
-                  </div>
-                  <div style={{ textAlign: 'center', marginTop: 'clamp(6px, 1.5vw, 14px)' }}>
-                    <h1 style={{
-                      color: '#f0ebe0',
-                      fontSize: 'clamp(1.4rem, 6vw, 3rem)',
-                      fontFamily: JOAN,
-                      fontWeight: 400,
-                      letterSpacing: '0.12em',
-                      margin: 0,
-                      textShadow: '0 2px 20px rgba(0,0,0,0.8)',
-                    }}>
-                      TELL A JOKE
-                    </h1>
-                    {phase === 'listening' && jokeType === 'tell' && (
-                      <p className="fade-up" style={{
-                        color: 'rgba(240,235,224,0.78)',
-                        fontSize: 'clamp(0.8rem, 3.5vw, 1.2rem)',
-                        fontFamily: JOAN,
-                        letterSpacing: '0.08em',
-                        marginTop: 4,
-                        textShadow: '0 1px 10px rgba(0,0,0,0.9)',
-                      }}>
-                        The audience is listening
-                      </p>
-                    )}
-                  </div>
-                </>
-              ) : (
-                /* ── Desktop: single flex row (logo | title | button) ── */
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  justifyContent: 'space-between',
-                  gap: 'clamp(6px, 1.5vw, 20px)',
-                }}>
-                  {/* Logo — left */}
-                  <div style={{ flexShrink: 0 }}>
-                    <img
-                      src="/assets/logo.png"
-                      alt="3 Months of Killing"
-                      style={{
-                        height: 'clamp(44px, 12vh, 160px)',
-                        width: 'auto',
-                        display: 'block',
-                        filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.7))',
-                      }}
-                    />
-                    <p style={{
-                      color: 'rgba(240,235,224,0.6)',
-                      fontSize: 'clamp(0.45rem, 0.85vw, 1rem)',
-                      letterSpacing: '0.22em',
-                      textTransform: 'uppercase',
-                      marginTop: 'clamp(2px, 0.4vh, 8px)',
-                      fontFamily: JOAN,
-                      textShadow: '0 1px 4px rgba(0,0,0,0.8)',
-                      whiteSpace: 'nowrap',
-                    }}>
-                      Written by Jon Ryan Sugimoto
-                    </p>
-                  </div>
-
-                  {/* TELL A JOKE — center */}
-                  <div style={{
-                    flex: 1,
-                    textAlign: 'center',
-                    minWidth: 0,
-                    paddingTop: 'clamp(4px, 0.8vh, 14px)',
+              {/* Logo */}
+              <div style={{ flexShrink: 0 }}>
+                <img
+                  src="/assets/logo.png"
+                  alt="3 Months of Killing"
+                  style={{
+                    height: isMobile ? 'clamp(36px, 10vw, 60px)' : 'clamp(44px, 12vh, 160px)',
+                    width: 'auto',
+                    display: 'block',
+                    filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.7))',
+                  }}
+                />
+                {!isMobile && (
+                  <p style={{
+                    color: 'rgba(240,235,224,0.6)',
+                    fontSize: 'clamp(0.45rem, 0.85vw, 1rem)',
+                    letterSpacing: '0.22em',
+                    textTransform: 'uppercase',
+                    marginTop: 'clamp(2px, 0.4vh, 8px)',
+                    fontFamily: JOAN,
+                    textShadow: '0 1px 4px rgba(0,0,0,0.8)',
+                    whiteSpace: 'nowrap',
                   }}>
-                    <h1 style={{
-                      color: '#f0ebe0',
-                      fontSize: 'clamp(1.2rem, 4.4vw, 7rem)',
-                      fontFamily: JOAN,
-                      fontWeight: 400,
-                      letterSpacing: '0.12em',
-                      margin: 0,
-                      textShadow: '0 2px 20px rgba(0,0,0,0.8)',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                    }}>
-                      TELL A JOKE
-                    </h1>
-                    {phase === 'listening' && jokeType === 'tell' && (
-                      <p className="fade-up" style={{
-                        color: 'rgba(240,235,224,0.78)',
-                        fontSize: 'clamp(0.75rem, 1.7vw, 2rem)',
-                        fontFamily: JOAN,
-                        letterSpacing: '0.08em',
-                        marginTop: 'clamp(3px, 0.4vh, 8px)',
-                        textShadow: '0 1px 10px rgba(0,0,0,0.9)',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                      }}>
-                        The audience is listening
-                      </p>
-                    )}
-                  </div>
+                    Written by Jon Ryan Sugimoto
+                  </p>
+                )}
+              </div>
 
-                  {/* Just play the video — right */}
-                  <div style={{ flexShrink: 0, paddingTop: 'clamp(4px, 0.8vh, 14px)' }}>
-                    <BoxButton small onClick={() => setPhase('film')}>
-                      Just play the video
-                    </BoxButton>
-                  </div>
-                </div>
-              )}
+              {/* Just play the video */}
+              <div style={{ flexShrink: 0, paddingTop: isMobile ? 2 : 'clamp(4px, 0.8vh, 14px)' }}>
+                <BoxButton small onClick={() => { startCrowd(); setPhase('film'); }}>
+                  Just play the video
+                </BoxButton>
+              </div>
             </header>
+
+            {/* ── TELL A JOKE title — floats between header and mic ── */}
+            {(phase === 'idle' || (phase === 'listening' && jokeType === 'tell')) && (
+              <div style={{
+                position: 'absolute',
+                top: isMobile ? '18%' : '22%',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                textAlign: 'center',
+                zIndex: 5,
+              }}>
+                <h1 style={{
+                  color: '#f0ebe0',
+                  fontSize: isMobile ? 'clamp(1.6rem, 7vw, 3rem)' : 'clamp(1.4rem, 4.8vw, 7.5rem)',
+                  fontFamily: JOAN,
+                  fontWeight: 400,
+                  letterSpacing: '0.12em',
+                  margin: 0,
+                  textShadow: '0 2px 24px rgba(0,0,0,0.9)',
+                  whiteSpace: 'nowrap',
+                }}>
+                  TELL A JOKE
+                </h1>
+                {phase === 'listening' && jokeType === 'tell' && (
+                  <p className="fade-up" style={{
+                    color: 'rgba(240,235,224,0.78)',
+                    fontSize: isMobile ? 'clamp(0.8rem, 3.5vw, 1.2rem)' : 'clamp(0.9rem, 1.8vw, 2rem)',
+                    fontFamily: JOAN,
+                    letterSpacing: '0.08em',
+                    marginTop: 'clamp(4px, 0.6vh, 10px)',
+                    textShadow: '0 1px 10px rgba(0,0,0,0.9)',
+                  }}>
+                    The audience is listening
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* ── IDLE: Both buttons flanking the mic ── */}
             {phase === 'idle' && (
@@ -427,24 +467,28 @@ export default function App() {
               />
             )}
 
-            {/* ── CRITIQUE — centered ── */}
+            {/* ── CRITIQUE — full-screen overlay, centered ── */}
             {phase === 'critique' && (
               <div className="fade-up" style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: 'clamp(260px, 55vw, 680px)',
-                padding: 'clamp(1rem, 2vh, 2rem) clamp(1rem, 2vw, 2.5rem)',
-                background: 'rgba(0,0,0,0.5)',
-                backdropFilter: 'blur(10px)',
+                position: 'fixed',
+                inset: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'rgba(0,0,0,0.78)',
+                backdropFilter: 'blur(3px)',
+                zIndex: 30,
+                padding: 'clamp(2rem, 5vw, 6rem)',
               }}>
-                <CritiqueDisplay
-                  text={critique}
-                  jokeType={jokeType}
-                  onWatchFilm={() => setPhase('film')}
-                  onTryAgain={handleReset}
-                />
+                <div style={{ maxWidth: 'clamp(280px, 60vw, 720px)', width: '100%' }}>
+                  <CritiqueDisplay
+                    text={critique}
+                    jokeType={jokeType}
+                    onWatchFilm={() => setPhase('film')}
+                    onTryAgain={handleReset}
+                  />
+                </div>
               </div>
             )}
 
