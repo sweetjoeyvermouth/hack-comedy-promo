@@ -213,7 +213,7 @@ export default function App() {
     if (p) {
       p.catch(() => { crowdStarted.current = false; return; });
       // Fade in to target volume over ~3s
-      const target = 0.0; // TEST: muted to diagnose laugh dropout
+      const target = 0.45;
       const step = target / 60; // 60 steps × 50ms = 3s
       const fade = setInterval(() => {
         if (audio.volume + step < target) {
@@ -262,12 +262,16 @@ export default function App() {
   const cleanup = useCallback(() => {
     if (animFrameRef.current)  { cancelAnimationFrame(animFrameRef.current); animFrameRef.current = null; }
     if (maxTimeoutRef.current) { clearTimeout(maxTimeoutRef.current);        maxTimeoutRef.current = null; }
-    if (streamRef.current)     { streamRef.current.getTracks().forEach(t => t.stop()); streamRef.current = null; }
-    // Delay AudioContext close — the async cleanup can glitch audio pipeline if it fires during playback
-    if (audioCtxRef.current)   {
+    // Delay mic + AudioContext teardown — immediate hardware release glitches audio output
+    if (streamRef.current) {
+      const stream = streamRef.current;
+      streamRef.current = null;
+      setTimeout(() => stream.getTracks().forEach(t => t.stop()), 8000);
+    }
+    if (audioCtxRef.current) {
       const ctx = audioCtxRef.current;
       audioCtxRef.current = null;
-      setTimeout(() => ctx.close().catch(() => {}), 5000);
+      setTimeout(() => ctx.close().catch(() => {}), 8000);
     }
   }, []);
 
