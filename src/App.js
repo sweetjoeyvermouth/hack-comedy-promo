@@ -542,7 +542,6 @@ export default function App() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 background: 'rgba(0,0,0,0.78)',
-                backdropFilter: 'blur(3px)',
                 zIndex: 30,
                 padding: 'clamp(2rem, 5vw, 6rem)',
               }}>
