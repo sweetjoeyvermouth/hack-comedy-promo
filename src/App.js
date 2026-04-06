@@ -169,11 +169,40 @@ export default function App() {
   const audioCtxRef     = useRef(null);
   const animFrameRef    = useRef(null);
   const maxTimeoutRef   = useRef(null);
-  const laughRef        = useRef(null);
   const crowdRef        = useRef(null);
   const crowdStarted    = useRef(false);
   const crowdFadeRef    = useRef(null);
   const bgVideoRef      = useRef(null);
+  // Dedicated AudioContext + buffer for laugh SFX — runs on audio thread, immune to React jank
+  const sfxCtxRef       = useRef(null);
+  const laughBufRef     = useRef(null);
+
+  // Load laugh.wav into an AudioBuffer once on mount
+  useEffect(() => {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AudioCtx();
+    sfxCtxRef.current = ctx;
+    fetch('/assets/laugh.wav')
+      .then(r => r.arrayBuffer())
+      .then(buf => ctx.decodeAudioData(buf))
+      .then(decoded => { laughBufRef.current = decoded; })
+      .catch(() => {});
+    return () => { ctx.close().catch(() => {}); };
+  }, []);
+
+  const playLaugh = useCallback(() => {
+    const ctx = sfxCtxRef.current;
+    const buf = laughBufRef.current;
+    if (!ctx || !buf) return;
+    const fire = () => {
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      src.connect(ctx.destination);
+      src.start(0);
+    };
+    if (ctx.state === 'suspended') ctx.resume().then(fire).catch(() => {});
+    else fire();
+  }, []);
 
   const startCrowd = useCallback(() => {
     if (crowdStarted.current || !crowdRef.current) return;
@@ -240,11 +269,7 @@ export default function App() {
   // Laugh starts playing, then we bridge into critique after ~1.2s
   // Audio continues under the new content — natural transition
   const playLaughAndBridge = useCallback((critiqueText) => {
-    if (laughRef.current) {
-      laughRef.current.currentTime = 0;
-      const p = laughRef.current.play();
-      if (p) p.catch(() => {});
-    }
+    playLaugh();
     // Play background video — holds on last frame when it ends (no loop)
     if (bgVideoRef.current) {
       bgVideoRef.current.play().catch(() => {});
@@ -257,7 +282,7 @@ export default function App() {
         setPhase('critique');
       });
     }, 1200);
-  }, []);
+  }, [playLaugh]);
 
   const stopRecording = useCallback(() => {
     cleanup();
@@ -330,7 +355,6 @@ export default function App() {
 
   const handleReset = () => {
     cleanup();
-    if (laughRef.current) { laughRef.current.pause(); laughRef.current.currentTime = 0; }
     jokeTypeRef.current = null;
     setPhase('idle');
     setJokeType(null);
@@ -351,7 +375,6 @@ export default function App() {
   return (
     <div className="relative w-full overflow-hidden bg-black" style={{ minHeight: '100dvh', fontFamily: JOAN }}>
 
-      <audio ref={laughRef} src="/assets/laugh.wav" preload="auto" />
       <audio ref={crowdRef} src="/assets/crowd.wav" preload="auto" loop />
 
       {phase === 'film' ? (
