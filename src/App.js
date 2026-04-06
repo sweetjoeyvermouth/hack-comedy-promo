@@ -279,17 +279,14 @@ export default function App() {
   // Audio continues under the new content — natural transition
   const playLaughAndBridge = useCallback((critiqueText) => {
     playLaugh();
-    // Delay video play so it doesn't interrupt the laugh track on start
-    setTimeout(() => {
-      if (bgVideoRef.current) bgVideoRef.current.play().catch(() => {});
-    }, 3000);
+    if (bgVideoRef.current) bgVideoRef.current.play().catch(() => {});
     // Bridge: show critique while laugh is still fading — delayed past the laugh peak
     setTimeout(() => {
       startTransition(() => {
         setCritique(critiqueText);
         setPhase('critique');
       });
-    }, 3500);
+    }, 1800);
   }, [playLaugh]);
 
   const stopRecording = useCallback(() => {
