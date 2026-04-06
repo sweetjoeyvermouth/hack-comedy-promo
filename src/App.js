@@ -263,7 +263,12 @@ export default function App() {
     if (animFrameRef.current)  { cancelAnimationFrame(animFrameRef.current); animFrameRef.current = null; }
     if (maxTimeoutRef.current) { clearTimeout(maxTimeoutRef.current);        maxTimeoutRef.current = null; }
     if (streamRef.current)     { streamRef.current.getTracks().forEach(t => t.stop()); streamRef.current = null; }
-    if (audioCtxRef.current)   { audioCtxRef.current.close().catch(() => {}); audioCtxRef.current = null; }
+    // Delay AudioContext close — the async cleanup can glitch audio pipeline if it fires during playback
+    if (audioCtxRef.current)   {
+      const ctx = audioCtxRef.current;
+      audioCtxRef.current = null;
+      setTimeout(() => ctx.close().catch(() => {}), 5000);
+    }
   }, []);
 
   // Laugh starts playing, then we bridge into critique after ~1.2s
@@ -274,14 +279,13 @@ export default function App() {
     if (bgVideoRef.current) {
       bgVideoRef.current.play().catch(() => {});
     }
-    // Bridge: transition while laugh is still playing
-    // startTransition tells React this is non-urgent — browser keeps audio thread priority
+    // Bridge: show critique while laugh is still fading — delayed past the laugh peak
     setTimeout(() => {
       startTransition(() => {
         setCritique(critiqueText);
         setPhase('critique');
       });
-    }, 1200);
+    }, 2000);
   }, [playLaugh]);
 
   const stopRecording = useCallback(() => {
