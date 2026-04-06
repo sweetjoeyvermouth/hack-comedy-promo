@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, startTransition } from 'react';
 import Teleprompter from './components/Teleprompter';
 import CritiqueDisplay from './components/CritiqueDisplay';
 import FilmEmbed from './components/FilmEmbed';
@@ -250,9 +250,12 @@ export default function App() {
       bgVideoRef.current.play().catch(() => {});
     }
     // Bridge: transition while laugh is still playing
+    // startTransition tells React this is non-urgent — browser keeps audio thread priority
     setTimeout(() => {
-      setCritique(critiqueText);
-      setPhase('critique');
+      startTransition(() => {
+        setCritique(critiqueText);
+        setPhase('critique');
+      });
     }, 1200);
   }, []);
 
