@@ -213,7 +213,7 @@ export default function App() {
     if (p) {
       p.catch(() => { crowdStarted.current = false; return; });
       // Fade in to target volume over ~3s
-      const target = 0.45;
+      const target = 0.0; // TEST: muted to diagnose laugh dropout
       const step = target / 60; // 60 steps × 50ms = 3s
       const fade = setInterval(() => {
         if (audio.volume + step < target) {
