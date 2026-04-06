@@ -285,7 +285,7 @@ export default function App() {
         setCritique(critiqueText);
         setPhase('critique');
       });
-    }, 2000);
+    }, 3500);
   }, [playLaugh]);
 
   const stopRecording = useCallback(() => {
